@@ -1,10 +1,9 @@
-
-
 using XLSX
 using DataFrames
 
 const DATA_SET_TL_VOLTAGES = [345 500 735]
-const US_STATES_LIST = []
+const US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+const US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
 mutable struct TL_FILTERS
     voltage_kv::Int
@@ -21,6 +20,15 @@ function check_voltage_availability( value )
         end
     end
     return false
+end
+
+function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS )
+    for row in eachrow(df_us_states)
+        if lowercase(user_filter.state) == lowercase(row[2])
+            println(row[4])
+            return split(row[4], ',')
+        end
+    end
 end
 
 function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
@@ -42,7 +50,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
 
     filt_df2   = filter(row -> row[:n_circuits] == user_filter.n_circuits, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there are no data that match ll the criteria selected. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
+        @warn( "Currently there are no data that match all the selected criteria. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
         return filt_df
     end
     filt_df = filt_df2
@@ -53,23 +61,34 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
     end
 
     filt_df2   = filter(row -> row[:n_ground_w] == user_filter.n_ground_wire, filt_df)
-    if nrow(filt_df) < 2
-        @warn( "Currently there are no data that match all the criteria selected. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
+    if nrow(filt_df2) < 1
+        @warn( "Currently there are no data that match all the selected criteria. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
         return filt_df
     end
     filt_df = filt_df2
 
-    #VERIFICAR QUE O STRING DO ESTADO ESTEJA DENTRO DA LISTA -  PREENCHER US STATES LIST VECTOR AT THE BEGINING
     #State
     if !(user_filter.state == "")
-        filt_df2   = filter(row -> occursin( user_filter.state, coalesce(row[:state], "") ), filt_df)
+        filt_df2   = filter(row -> occursin( lowercase( user_filter.state ), coalesce( lowercase( row[:state] ), "" ) ), filt_df)
+        if nrow(filt_df2) < 1
+
+            @warn( "Currently there are no data that match all the selected criteria. The state and structure type filters were ignored." )
+            return filt_df
+        end
+        filt_df = filt_df2
     end
+    
 
     #Structure type
     if !(user_filter.structure_type == "")
         filt_df2   = filter(row -> row[:structure_type] == user_filter.structure_type, filt_df)
+        if nrow(filt_df2) < 1
+            @warn( "Currently there are no data that match all the selected criteria. The structure type filter was ignored." )
+            return filt_df
+        end
+        filt_df = filt_df2
     end
-
+    
     return filt_df
 end
 
@@ -77,12 +96,22 @@ end
 
 
 #Read XLSX file with typical US tower Geometries
-file_path  = "Tower_geometries_DB.xlsx"
-sheet_name = "TL_Geometry"
-df         = DataFrame( XLSX.readtable(file_path, sheet_name) )
-tl1_filter = TL_FILTERS( 345, 2, 2, "Indiana", "" )
+file_path         = "Tower_geometries_DB.xlsx"
+sheet_tl_geometry = "TL_Geometry"
+sheet_us_states   = "Neighboring"
+df_tl_geometry    = DataFrame( XLSX.readtable(file_path, sheet_tl_geometry) )
+df_us_states_info = DataFrame( XLSX.readtable(file_path, sheet_us_states) )
+tl1_filter = TL_FILTERS( 345, 2, 2, "oHIO", "" )
 
-filt_df    = get_filtered_tl_dataframe(df, tl1_filter)
+filt_df    = get_filtered_tl_dataframe(df_tl_geometry, tl1_filter)
 
 println(filt_df)
 println("\n", nrow(filt_df))
+
+#println( df_us_states_info )
+
+#println( df_us_states_info.bordering_states )
+
+bordering_states = get_bordering_states( df_us_states_info, tl1_filter )
+
+
