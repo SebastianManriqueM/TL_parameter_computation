@@ -1,61 +1,10 @@
-#=
-Alabama Alabama	Ala.	AL
-Alaska Alaska	Alaska	AK
-Arizona Arizona	Ariz.	AZ
-Arkansas Arkansas	Ark.	AR
-California California	Calif.	CA
- Colorado	Colo.	CO
- Connecticut	Conn.	CT
-Delaware Delaware	Del.	DE
-Washington, D.C. District of Columbia	D.C.	DC
-Florida Florida	Fla.	FL
-Georgia (U.S. state) Georgia	Ga.	GA
-Hawaii Hawaii	Hawaii	HI
-Idaho Idaho	Idaho	ID
-Illinois	Ill.	IL
-Indiana	Ind.	IN
-Iowa	Iowa	IA
-Kansas	Kans.	KS
-Kentucky	Ky.	KY
-Louisiana	La.	LA
-Maine	Maine	ME
-Maryland	Md.	MD
-Massachusetts	Mass.	MA
-Michigan	Mich.	MI
-Minnesota	Minn.	MN
-Mississippi	Miss.	MS
-Missouri	Mo.	MO
-Montana	Mont.	MT
-Nebraska	Nebr.	NE
-Nevada	Nev.	NV
-New Hampshire	N.H.	NH
-New Jersey	N.J.	NJ
-New Mexico	N. Mex.	NM
-New York	N.Y.	NY
-North Carolina	N.C.	NC
-North Dakota	N. Dak.	ND
-Ohio	Ohio	OH
-Oklahoma	Okla.	OK
-Oregon	Ore.	OR
-Pennsylvania	Pa.	PA
-Rhode Island	R.I.	RI
-South Carolina	S.C.	SC
-South Dakota	S. Dak.	SD
-Tennessee	Tenn.	TN
-Texas	Tex.	TX
-Utah	Utah	UT
-Vermont	Vt.	VT
-Virginia	Va.	VA
-Washington	Wash.	WA
-West Virginia	W. Va.	WV
-Wisconsin Wisconsin	Wis.	WI
-Wyoming Wyoming	Wyo.	WY
-=#
+
 
 using XLSX
 using DataFrames
 
 const DATA_SET_TL_VOLTAGES = [345 500 735]
+const US_STATES_LIST = []
 
 mutable struct TL_FILTERS
     voltage_kv::Int
@@ -82,35 +31,43 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
     filt_df  = filter( row -> row[:voltage_kv] == user_filter.voltage_kv, df) 
 
     if nrow(filt_df) < 2
-        @warn( "Currently, there is only one data for $(user_filter.voltage_kv). Other filters were neglected" )
+        @warn( "Currently, there is only one TL geometry for $(user_filter.voltage_kv) kV. Other filters were neglected." )
         return filt_df
     end
 
     #N circuits
     if user_filter.n_circuits > 2
-        error("Currently, there is only one data for transmission lines carrying up to 2 circuits")
+        error("The current data set include information of Tower Geometries carrying up to 2 circuits. Please reconsider your selection of $(user_filter.n_circuits) circuits.")
     end
 
     filt_df2   = filter(row -> row[:n_circuits] == user_filter.n_circuits, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there are no data that match for voltage level of $(user_filter.voltage_kv) and number of circuits of $(user_filter.n_circuits). The number of circuits filter was ignored" )
+        @warn( "Currently there are no data that match ll the criteria selected. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
         return filt_df
     end
     filt_df = filt_df2
 
     #N ground wires
-    if nrow(filt_df) < 2
-    filt_df2   = filter(row -> row[:n_ground_w] == user_filter.n_ground_wire, filt_df)
+    if user_filter.n_ground_wire > 2
+        error("The current data set include information of Tower Geometries carrying up to 2 ground wires. Please reconsider your selection of $(user_filter.n_ground_wire) ground wires.")
     end
 
+    filt_df2   = filter(row -> row[:n_ground_w] == user_filter.n_ground_wire, filt_df)
+    if nrow(filt_df) < 2
+        @warn( "Currently there are no data that match all the criteria selected. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
+        return filt_df
+    end
+    filt_df = filt_df2
+
+    #VERIFICAR QUE O STRING DO ESTADO ESTEJA DENTRO DA LISTA -  PREENCHER US STATES LIST VECTOR AT THE BEGINING
     #State
     if !(user_filter.state == "")
-        filt_df   = filter(row -> occursin( user_filter.state, coalesce(row[:state], "") ), filt_df)
+        filt_df2   = filter(row -> occursin( user_filter.state, coalesce(row[:state], "") ), filt_df)
     end
 
     #Structure type
     if !(user_filter.structure_type == "")
-        filt_df   = filter(row -> row[:structure_type] == user_filter.structure_type, filt_df)
+        filt_df2   = filter(row -> row[:structure_type] == user_filter.structure_type, filt_df)
     end
 
     return filt_df
