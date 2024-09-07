@@ -28,13 +28,14 @@ function clear_string_v_lead_trail_spaces!( string_v )
         string_v[i] = strip( string )
         i = i + 1
     end
-    return string_v
 end
 
 function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS )
     for row in eachrow(df_us_states)
-        if strip( lowercase(user_filter.state) ) == lowercase( row[2] )
-            return clear_string_v_lead_trail_spaces!( split(row[4], ',') ) 
+        if strip( lowercase(user_filter.state) ) == strip( lowercase( row[2] ) )
+            bordering_states_v = split(row[4], ',')
+            clear_string_v_lead_trail_spaces!( bordering_states_v )
+            return bordering_states_v
         end
     end
 end
@@ -58,7 +59,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
 
     filt_df2   = filter(row -> row[:n_circuits] == user_filter.n_circuits, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there are no data that match all the selected criteria. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
+        @warn( "Currently there is no data that match all the selected criteria. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
         return filt_df
     end
     filt_df = filt_df2
@@ -70,7 +71,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
 
     filt_df2   = filter(row -> row[:n_ground_w] == user_filter.n_ground_wire, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there are no data that match all the selected criteria. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
+        @warn( "Currently there is no data that match all the selected criteria. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
         return filt_df
     end
     filt_df = filt_df2
@@ -79,8 +80,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
     if !(user_filter.state == "")
         filt_df2   = filter(row -> occursin( strip(lowercase( user_filter.state )), coalesce( lowercase( row[:state] ), "" ) ), filt_df)
         if nrow(filt_df2) < 1
-
-            @warn( "Currently there are no data that match all the selected criteria. The state and structure type filters were ignored." )
+            @warn( "Currently there is no data that match all the selected criteria. The state and structure type filters were ignored." )
             return filt_df
         end
         filt_df = filt_df2
@@ -91,7 +91,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
     if !(user_filter.structure_type == "")
         filt_df2   = filter(row -> row[:structure_type] == user_filter.structure_type, filt_df)
         if nrow(filt_df2) < 1
-            @warn( "Currently there are no data that match all the selected criteria. The structure type filter was ignored." )
+            @warn( "Currently there is no data that match all the selected criteria. The structure type filter was ignored." )
             return filt_df
         end
         filt_df = filt_df2
@@ -104,7 +104,7 @@ end
 
 
 #Read XLSX file with typical US tower Geometries
-file_path         = "Tower_geometries_DB.xlsx"
+file_path         = "data/Tower_geometries_DB.xlsx"
 sheet_tl_geometry = "TL_Geometry"
 sheet_us_states   = "Neighboring"
 df_tl_geometry    = DataFrame( XLSX.readtable(file_path, sheet_tl_geometry) )
@@ -121,7 +121,9 @@ println("N TRANSMISSION LINES:\n", nrow(filt_df))
 #println( df_us_states_info.bordering_states )
 
 bordering_states = get_bordering_states( df_us_states_info, tl1_filter )
+#println("before: ", bordering_states)
 #clear_string_v_lead_trail_spaces!( bordering_states )
+#println("After: ", bordering_states)
 
 for state_i in bordering_states
     println(state_i)
