@@ -22,11 +22,19 @@ function check_voltage_availability( value )
     return false
 end
 
+function clear_string_v_lead_trail_spaces!( string_v )
+    i = 1
+    for string in string_v
+        string_v[i] = strip( string )
+        i = i + 1
+    end
+    return string_v
+end
+
 function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS )
     for row in eachrow(df_us_states)
-        if lowercase(user_filter.state) == lowercase(row[2])
-            println(row[4])
-            return split(row[4], ',')
+        if strip( lowercase(user_filter.state) ) == lowercase( row[2] )
+            return clear_string_v_lead_trail_spaces!( split(row[4], ',') ) 
         end
     end
 end
@@ -69,7 +77,7 @@ function get_filtered_tl_dataframe(df::DataFrame, user_filter::TL_FILTERS)
 
     #State
     if !(user_filter.state == "")
-        filt_df2   = filter(row -> occursin( lowercase( user_filter.state ), coalesce( lowercase( row[:state] ), "" ) ), filt_df)
+        filt_df2   = filter(row -> occursin( strip(lowercase( user_filter.state )), coalesce( lowercase( row[:state] ), "" ) ), filt_df)
         if nrow(filt_df2) < 1
 
             @warn( "Currently there are no data that match all the selected criteria. The state and structure type filters were ignored." )
@@ -101,17 +109,20 @@ sheet_tl_geometry = "TL_Geometry"
 sheet_us_states   = "Neighboring"
 df_tl_geometry    = DataFrame( XLSX.readtable(file_path, sheet_tl_geometry) )
 df_us_states_info = DataFrame( XLSX.readtable(file_path, sheet_us_states) )
-tl1_filter = TL_FILTERS( 345, 2, 2, "oHIO", "" )
+tl1_filter        = TL_FILTERS( 345, 2, 2, "ohio  ", "" )
 
-filt_df    = get_filtered_tl_dataframe(df_tl_geometry, tl1_filter)
+filt_df           = get_filtered_tl_dataframe(df_tl_geometry, tl1_filter)
 
-println(filt_df)
-println("\n", nrow(filt_df))
+println(filt_df[:,1:7])
+println("N TRANSMISSION LINES:\n", nrow(filt_df))
 
 #println( df_us_states_info )
 
 #println( df_us_states_info.bordering_states )
 
 bordering_states = get_bordering_states( df_us_states_info, tl1_filter )
+#clear_string_v_lead_trail_spaces!( bordering_states )
 
-
+for state_i in bordering_states
+    println(state_i)
+end
