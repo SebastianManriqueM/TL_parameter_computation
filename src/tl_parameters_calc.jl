@@ -79,7 +79,7 @@ function get_tl_df_single_filter( df::DataFrame, user_filter::TLFilters, key_df_
     elseif occursin( strip( lowercase("structure_type") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.structure_type
     else
-        @error("Please review key_df_column argument passed to $(nameof(var"#self#")) function. You can set this argument as 'state' or 'structure_type'. ")
+        @error("Please review key_df_column argument passed to $(nameof(var"#self#")) function. You can set this argument as 'state' or 'structure_type'.")
     end
     # Define the filtering function
     # **This filter has a Bug for STATES since "Kansas" is a substring or "Arkansas"
@@ -208,7 +208,41 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     return filt_df
 end
 
+function get_tl_basicdata( df::DataFrame, rowindex::Int = 1 )::TLBasicData
+    if nrow(df) < 1
+        error( "Please review DataFrame argument passed to $(nameof(var"#self#")) function, it has no data." )
+    end
+    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ] )
+end
 
+function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
+    n_cables = ( basicdata.n_circuits * 3 ) + basicdata.n_ground_wire
+    x_coord  = zeros( 1 , n_cables )
+    y_coord  = zeros( 1 , n_cables )
+    yindex_01 = COL_INDEX_MAP_TL[ "ya1_ft" ] - 1
+    yindex_02 = COL_INDEX_MAP_TL[ "ya2_ft" ] - 1
+    xindex_01 = COL_INDEX_MAP_TL[ "xa1_ft" ] - 1
+    xindex_02 = COL_INDEX_MAP_TL[ "xa2_ft" ] - 1
+    #Phase Conductors
+    for i = 1 : 3
+        y_coord[ i ]       = df[ rowindex , yindex_01 + i ]
+        x_coord[ i ]       = df[ rowindex , xindex_01 + i ]
+        if basicdata.n_circuits == 2   
+            y_coord[ end-3+i ] = df[ rowindex , yindex_02 + i ]
+            x_coord[ end-3+i ] = df[ rowindex , xindex_02 + i ]
+        end
+    end
+
+    #Ground wires
+    y_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ] 
+    x_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ] 
+    if basicdata.n_ground_wire == 2
+        y_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ]
+        x_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ]
+    end
+
+    return TLGeometry( x_coord, y_coord )
+end
 
 
 #Read XLSX file with typical US tower Geometries
@@ -236,3 +270,6 @@ filt_df_neigh_states = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 println(filt_df_neigh_states[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_df_neigh_states))
 
+tl1_basicdata = get_tl_basicdata( filt_df_neigh_states )
+
+tl1_geometry = get_tl_geometry( filt_df_neigh_states, tl1_basicdata )

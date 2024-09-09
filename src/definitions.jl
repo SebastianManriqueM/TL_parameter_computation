@@ -28,50 +28,51 @@ const COL_INDEX_MAP_TL = Dict(
     "yg2_ft"           => 20,
     "xg2_ft"           => 21,
     #Coordinates Conductors circuit 2
-    "xa2_ft"           => 22,
-    "xb2_ft"           => 23,
-    "xc2_ft"           => 24,
-    "ya2_ft"           => 25,
-    "yb2_ft"           => 26,
-    "yc2_ft"           => 27
+    "ya2_ft"           => 22,
+    "yb2_ft"           => 23,
+    "yc2_ft"           => 24,
+    "xa2_ft"           => 25,
+    "xb2_ft"           => 26,
+    "xc2_ft"           => 27
 )
 
 #Struct for user filter of transmission lines geometries
 mutable struct TLFilters
-    voltage_kv::UInt32
-    n_circuits::UInt8
-    n_ground_wire::UInt8
+    voltage_kv::Int
+    n_circuits::Int
+    n_ground_wire::Int
     state::Union{Vector{String}, Matrix{String}}
     structure_type::Union{Vector{String}, Matrix{String}}
 end
 
-
+struct TLBasicData
+    voltage_kv::Int
+    n_circuits::Int
+    n_ground_wire::Int
+    state::String
+    structure_type::String
+end
 struct TLGeometry
-    voltage_kv::UInt32
-    n_circuits::UInt8
-    n_ground_wire::UInt8
     x_coordinates::Matrix{Float64}
     y_coordinates::Matrix{Float64}
-    state::Union{Vector{String}, Matrix{String}}
-    structure_type::Union{Vector{String}, Matrix{String}}
 end
 
 struct TLConductor
     type::String
     name::String
     stranding::String
-    conductor_diameter::Float64
-    conductor_gmr::Float64
+    diameter::Float64
+    gmr::Float64
     #conductor_selfL::Float64
     bundling::Int
-    bundling_spacing::Float64
+    bundlingspacing::Float64
 end
 
 struct TLGroundWire
-    ground_Type::String
-    ground_stranding::String
-    ground_diameter::Float64
-    ground_gmr::Float64
+    type::String
+    stranding::String
+    diameter::Float64
+    gmr::Float64
     #conductor_selfL::Float64
 end
 
@@ -81,8 +82,9 @@ end
 abstract type TransmissionLine end
 
 struct Line <: TransmissionLine
+    basicdata::TLBasicData
     geometry::TLGeometry
     conductor::TLConductor
-    ground_w::TLGroundWire
-    e_parameters::ElectricalParameters
+    groundw::TLGroundWire
+    eparameters::ElectricalParameters
 end
