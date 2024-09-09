@@ -34,7 +34,7 @@ function compare_index_v_dimension( index::Int, vector , function_name)
 end
 
 #For now it only works for one position
-function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS, index::Int = 1 )
+function get_bordering_states( df_us_states::DataFrame, user_filter::TLFilters, index::Int = 1 )
 
     #Check index is between the user_filter.state Vector limits
     index_checked = compare_index_v_dimension( index, user_filter.state, nameof(var"#self#"))
@@ -44,7 +44,7 @@ function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS,
     end
 
     if ( user_filter.state[index_checked] == "" )
-        @error("Check TL_FILTERS.state[index]. It is not possible to obtain bordering states becuase that filter property has no value.")
+        @error("Check TLFilters.state[index]. It is not possible to obtain bordering states becuase that filter property has no value.")
     end
 
     #Find Bordering states using df_us_states
@@ -55,16 +55,16 @@ function get_bordering_states( df_us_states::DataFrame, user_filter::TL_FILTERS,
             return bordering_states_v
         end
     end
-    @error( "$(user_filter.state[index_checked]) was not found to obtain its bordering states. Check TL_FILTERS.state[index]"  )
+    @error( "$(user_filter.state[index_checked]) was not found to obtain its bordering states. Check TLFilters.state[index]"  )
 end
 
-function get_filter_with_neighboring_states!( df_us_states::DataFrame, user_filter::TL_FILTERS, index::Int = 1 )
+function get_filter_with_neighboring_states!( user_filter::TLFilters, df_us_states::DataFrame, index::Int = 1 )
     bord_states = get_bordering_states( df_us_states, user_filter, index )
     append!( user_filter.state, bord_states )
 end
 
 
-function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TL_FILTERS )
+function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TLFilters )
     if !(check_voltage_availability( user_filter.voltage_kv ))
         error("The current data set does not include information of Tower Geometries for $(user_filter.voltage_kv) kV. The dataset includes information for the following voltage levels (kV): $DATA_SET_TL_VOLTAGES")
     end
@@ -72,7 +72,7 @@ function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TL_FILTERS )
 end
 
 
-function get_tl_df_single_filter( df::DataFrame, user_filter::TL_FILTERS, key_df_column::String="state" )
+function get_tl_df_single_filter( df::DataFrame, user_filter::TLFilters, key_df_column::String="state" )
     index_df = COL_INDEX_MAP_TL[ key_df_column ]
     if occursin( strip( lowercase("state") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.state
@@ -88,15 +88,15 @@ function get_tl_df_single_filter( df::DataFrame, user_filter::TL_FILTERS, key_df
 end
 
 """
-get_tl_df_all_filters(df::DataFrame, user_filter::TL_FILTERS) -> DataFrame
+get_tl_df_all_filters(df::DataFrame, user_filter::TLFilters) -> DataFrame
 
 Apply multiple filters to a DataFrame containing transmission line (TL) geometries based on user-defined criteria.
 
 # Arguments
 - `df::DataFrame`: The input DataFrame containing TL geometries.
-- `user_filter::TL_FILTERS`: A struct containing the filter criteria, including voltage level, number of circuits, number of ground wires, and state.
+- `user_filter::TLFilters`: A struct containing the filter criteria, including voltage level, number of circuits, number of ground wires, and state.
 
-    mutable struct TL_FILTERS
+    mutable struct TLFilters
         voltage_kv::Int
         n_circuits::Int
         n_ground_wire::Int
@@ -120,7 +120,7 @@ df_tl_geometry    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_geometry) 
 df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
 
 #Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice 
-tl1_filter        = TL_FILTERS( 345, 2, 2, ["Indiana"], ["Lattice"] )
+tl1_filter        = TLFilters( 345, 2, 2, ["Indiana"], ["Lattice"] )
 
 #Apply filters and obtain filtered data frame
 filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
@@ -138,11 +138,11 @@ df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
 
 #Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice
 
-tl1_filter        = TL_FILTERS( 345, 2, 2, ["Indiana"], ["Lattice"] )
+tl1_filter        = TLFilters( 345, 2, 2, ["Indiana"], ["Lattice"] )
 
 #Include bordering states in the filter
 
-get_filter_with_neighboring_states!( df_us_states_info, tl1_filter )
+get_filter_with_neighboring_states!( tl1_filter, df_us_states_info  )
 
 #Apply filters and obtain filtered data frame
 
@@ -152,7 +152,7 @@ filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
 println(filt_df[:,1:7])
 """
-function get_tl_df_all_filters( df::DataFrame, user_filter::TL_FILTERS )
+function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     # Voltage level
     filt_df  =  get_voltage_filtered_tl_df( df, user_filter )
 
@@ -220,8 +220,7 @@ df_tl_geometry    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_geometry) 
 df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
 
 #Set filtering options
-tl1_filter        = TL_FILTERS( 345, 2, 2, ["Ohio"], ["Lattice"] )
-
+tl1_filter        = TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
 
 println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
 filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
@@ -230,7 +229,7 @@ println(filt_df[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_df))
 
 
-get_filter_with_neighboring_states!( df_us_states_info, tl1_filter )
+get_filter_with_neighboring_states!( tl1_filter, df_us_states_info )
 println("FILTER INCLUDING NEIGHBORING STATES: $(tl1_filter.state)")
 filt_df_neigh_states = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 

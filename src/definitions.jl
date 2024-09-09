@@ -31,10 +31,52 @@ const COL_INDEX_MAP_TL = Dict(
 )
 
 #Struct for user filter of transmission lines geometries
-mutable struct TL_FILTERS
-    voltage_kv::Int
-    n_circuits::Int
-    n_ground_wire::Int
+mutable struct TLFilters
+    voltage_kv::UInt32
+    n_circuits::UInt8
+    n_ground_wire::UInt8
     state::Union{Vector{String}, Matrix{String}}
     structure_type::Union{Vector{String}, Matrix{String}}
+end
+
+
+struct TLGeometry
+    voltage_kv::UInt32
+    n_circuits::UInt8
+    n_ground_wire::UInt8
+    x_coordinates::Matrix{Float64}
+    y_coordinates::Matrix{Float64}
+    state::Union{Vector{String}, Matrix{String}}
+    structure_type::Union{Vector{String}, Matrix{String}}
+end
+
+struct TLConductor
+    type::String
+    name::String
+    stranding::String
+    conductor_diameter::Float64
+    conductor_gmr::Float64
+    #conductor_selfL::Float64
+    bundling::Int
+    bundling_spacing::Float64
+end
+
+struct TLGroundWire
+    ground_Type::String
+    ground_stranding::String
+    ground_diameter::Float64
+    ground_gmr::Float64
+    #conductor_selfL::Float64
+end
+
+struct ElectricalParameters
+end
+
+abstract type TransmissionLine end
+
+struct Line <: TransmissionLine
+    geometry::TLGeometry
+    conductor::TLConductor
+    ground_w::TLGroundWire
+    e_parameters::ElectricalParameters
 end
