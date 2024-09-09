@@ -15,19 +15,25 @@ const COL_INDEX_MAP_TL = Dict(
     "Insul_Creep_Dist_mm" => 9,
     "Insul_Spac_mm"    => 10,
     "L_Ins_String_ft"  => 11,
-    "xa1_ft"           => 12,
-    "xb1_ft"           => 13,
-    "xc1_ft"           => 14,
-    "ya1_ft"           => 15,
-    "yb1_ft"           => 16,
-    "yc1_ft"           => 17,
-    #Ground wires
-    "xa2_ft"           => 18,
-    "xb2_ft"           => 19,
-    "xc2_ft"           => 20,
-    "ya2_ft"           => 21,
-    "yb2_ft"           => 22,
-    "yc2_ft"           => 23
+    #Coordinates Conductors circuit 1
+    "ya1_ft"           => 12,
+    "yb1_ft"           => 13,
+    "yc1_ft"           => 14,
+    "xa1_ft"           => 15,
+    "xb1_ft"           => 16,
+    "xc1_ft"           => 17,
+    #Coordinates Ground wires
+    "yg1_ft"           => 18,
+    "xg1_ft"           => 19,
+    "yg2_ft"           => 20,
+    "xg2_ft"           => 21,
+    #Coordinates Conductors circuit 2
+    "xa2_ft"           => 22,
+    "xb2_ft"           => 23,
+    "xc2_ft"           => 24,
+    "ya2_ft"           => 25,
+    "yb2_ft"           => 26,
+    "yc2_ft"           => 27
 )
 
 #Struct for user filter of transmission lines geometries
