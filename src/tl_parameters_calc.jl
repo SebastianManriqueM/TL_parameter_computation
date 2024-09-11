@@ -82,7 +82,7 @@ function get_tl_df_single_filter( df::DataFrame, user_filter::TLFilters, key_df_
         @error("Please review key_df_column argument passed to $(nameof(var"#self#")) function. You can set this argument as 'state' or 'structure_type'.")
     end
     # Define the filtering function
-    # **This filter has a Bug for STATES since "Kansas" is a substring or "Arkansas"
+    # **This filter has a Bug for STATES since "Kansas" is a substring of "Arkansas"
     filter_func( row ) = any( s -> occursin( strip(lowercase(s)), coalesce(strip(lowercase(row[index_df]))) ), user_filter_str_v )
     return filter(filter_func, df)
 end
