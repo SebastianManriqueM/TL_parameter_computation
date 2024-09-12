@@ -23,10 +23,10 @@ def remove_text_after_substring(s, substring):
         # If the substring is not found, return the original string
         return s
 
-index_file = 1
-file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data"]
-first_substring = [ "Turkey" , "Peachbell"]
-last_substring  = ["*STOCKED", "*STOCKED"]
+index_file = 2
+file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data", "ACAR_electrical_data_CME"]
+first_substring = [ "Turkey" , "Peachbell", "Pelican"]
+last_substring  = ["*STOCKED", "*STOCKED", "Kingfisher*"]
 
 folder_name = "cable_data"
 pdf_path    = folder_name + "/" + file_name[index_file] + ".pdf"
@@ -43,6 +43,7 @@ for page_num in range(len(pdf.pages)):
     text = page.extract_text()
     print(text)
 
+text = remove_text_before_substring(text, first_substring[index_file])
 text = remove_text_before_substring(text, first_substring[index_file])
 text = remove_text_after_substring( text, last_substring[index_file])
 print(text)
