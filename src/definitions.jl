@@ -1,9 +1,11 @@
+using Parameters
+
 const DATA_SET_TL_VOLTAGES = [345 500 735]
-const US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
-const US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
+US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
 #Dictionary for mapping Transmission Lines Geometry Dataframe Columns
-const COL_INDEX_MAP_TL = Dict(
+COL_INDEX_MAP_TL = Dict(
     "code"           => 1,
     "structure_type" => 2,
     "company"        => 3,
@@ -36,7 +38,7 @@ const COL_INDEX_MAP_TL = Dict(
     "xc2_ft"           => 27
 )
 
-const COL_INDEX_BORDERING_STATES = Dict(
+COL_INDEX_BORDERING_STATES = Dict(
     "number"             => 1,
     "state"             => 2,
     "abreviation"        => 3,
@@ -44,10 +46,10 @@ const COL_INDEX_BORDERING_STATES = Dict(
     "n_bordering_states" => 5
 )
 
-const COL_INDEX_CONDUCTOR = Dict(
-    "conductor_type" => 1,
+COL_INDEX_CONDUCTOR = Dict(
+    "type"           => 1,
     "codeword"       => 2,
-    "Size_kcmil"     => 3,
+    "size_kcmil"     => 3,
     "stranding"      => 4,
     "diameter_inch"  => 5,
     "R_20dc_ohm_kft" => 6,
@@ -59,14 +61,32 @@ const COL_INDEX_CONDUCTOR = Dict(
     "ampacity_a"     => 12
 )
 
+abstract type FiltersStructs end
+
+abstract type FilterTLGeomatry <: FiltersStructs end
+
+abstract type FilterConductor <: FiltersStructs end
 
 #Struct for user filter of transmission lines geometries
-mutable struct TLFilters
+mutable struct TLFilters <: FilterTLGeomatry
     voltage_kv::Int
     n_circuits::Int
     n_ground_wire::Int
     state::Union{Vector{String}, Matrix{String}}
     structure_type::Union{Vector{String}, Matrix{String}}
+
+    # Inner constructor with default values
+    TLFilters(voltage_kv::Int, n_circuits::Int, n_ground_wire::Int, state::Union{Vector{String}, Matrix{String}} = [""], structure_type::Union{Vector{String}, Matrix{String}} = [""]) = new(voltage_kv, n_circuits, n_ground_wire, state, structure_type)
+end
+
+mutable struct ConductorFilterName <: FilterConductor
+    type::Union{Vector{String}, Matrix{String}}
+    codeword::Union{Vector{String}, Matrix{String}}
+end
+
+mutable struct ConductorFilterKcm <: FilterConductor
+    type::Union{Vector{String}, Matrix{String}}
+    kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
 
 #Strructs part of Abstact type TransmissionLine
@@ -86,9 +106,10 @@ end
 struct TLConductor
     type::String
     name::String
-    stranding::String
     bundling::Int
     bundlingspacing::Float64
+    stranding::String
+    kcmil::Float64
     diameter::Float64
     gmr::Float64
     Rac_75::Float64

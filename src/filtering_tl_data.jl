@@ -72,20 +72,22 @@ function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TLFilters )
 end
 
 
-function get_tl_df_single_filter( df::DataFrame, user_filter::TLFilters, key_df_column::String="state" )
+function get_df_single_str_filter( df::DataFrame, user_filter::TLFilters, key_df_column::String="state" )
     index_df = COL_INDEX_MAP_TL[ key_df_column ]
     if occursin( strip( lowercase("state") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.state
     elseif occursin( strip( lowercase("structure_type") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.structure_type
     else
-        @error("Please review key_df_column argument passed to $(nameof(var"#self#")) function. You can set this argument as 'state' or 'structure_type'.")
+        @error("Please arguments provided to $(nameof(var"#self#")) function. In this case, it was expected a TL Geometry DataFrame and you can set 'key_df_column' argument as 'state' or 'structure_type'.")
     end
     # Define the filtering function
     # **This filter has a Bug for STATES since "Kansas" is a substring of "Arkansas"
-    filter_func( row ) = any( s -> occursin( strip(lowercase(s)), coalesce(strip(lowercase(row[index_df]))) ), user_filter_str_v )
+    filter_func( row ) = any( s -> occursin( strip( lowercase(s) ), coalesce( strip(lowercase(row[index_df])) ) ), user_filter_str_v )
     return filter(filter_func, df)
 end
+
+
 
 """
 get_tl_df_all_filters(df::DataFrame, user_filter::TLFilters) -> DataFrame
@@ -187,7 +189,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
 
     #State
     if !( user_filter.state[1] == "" )
-        filt_df2 = get_tl_df_single_filter( filt_df, user_filter, "state" )
+        filt_df2 = get_df_single_str_filter( filt_df, user_filter, "state" )
         if nrow( filt_df2 ) < 1
             @warn( "Currently there is no data that match all the selected criteria. The state filter was ignored." )
         else
@@ -197,7 +199,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     
     #Structure type
     if !( user_filter.structure_type[1] == "" )
-        filt_df2 = get_tl_df_single_filter( filt_df, user_filter, "structure_type" )
+        filt_df2 = get_df_single_str_filter( filt_df, user_filter, "structure_type" )
         if nrow(filt_df2) < 1
             @warn( "Currently there is no data that match all the selected criteria. The structure type filter was ignored." )
             return filt_df
