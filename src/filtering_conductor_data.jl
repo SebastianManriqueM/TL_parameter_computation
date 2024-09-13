@@ -1,3 +1,5 @@
+include("definitions.jl")
+
 function get_struct_conductorfilters( type::Union{Vector{String}, Matrix{String}}, name::Union{Vector{String}, Matrix{String}} )::ConductorFilterName
     return ConductorFilterName( type, name )
 end

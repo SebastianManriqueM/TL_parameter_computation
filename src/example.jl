@@ -1,4 +1,6 @@
-include("definitions.jl")
+using XLSX
+using DataFrames
+
 include("filtering_tl_data.jl")
 include("filtering_conductor_data.jl")
 
