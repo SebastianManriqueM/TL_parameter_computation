@@ -77,3 +77,10 @@ function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterKcm )
 
     return filt_df
 end
+
+function get_conductor_data( df::DataFrame, rowindex::Int = 1 )::TLConductor
+    if nrow(df) < 1
+        error( "Please review DataFrame argument passed to $(nameof(var"#self#")) function, it has no data." )
+    end
+    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ] )
+end
