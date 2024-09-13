@@ -36,6 +36,30 @@ const COL_INDEX_MAP_TL = Dict(
     "xc2_ft"           => 27
 )
 
+const COL_INDEX_BORDERING_STATES = Dict(
+    "number"             => 1,
+    "state"             => 2,
+    "abreviation"        => 3,
+    "bordering_states"   => 4,
+    "n_bordering_states" => 5
+)
+
+const COL_INDEX_CONDUCTOR = Dict(
+    "conductor_type" => 1,
+    "codeword"       => 2,
+    "Size_kcmil"     => 3,
+    "stranding"      => 4,
+    "diameter_inch"  => 5,
+    "R_20dc_ohm_kft" => 6,
+    "R_25ac_ohm_kft" => 7,
+    "R_50ac_ohm_kft" => 8,
+    "R_75AC_ohm_kft" => 9,
+    "C_60Hz_Mohm_kft"=> 10,
+    "L_60Hz_ohm_kft" => 11,
+    "ampacity_a"     => 12
+)
+
+
 #Struct for user filter of transmission lines geometries
 mutable struct TLFilters
     voltage_kv::Int
@@ -45,12 +69,14 @@ mutable struct TLFilters
     structure_type::Union{Vector{String}, Matrix{String}}
 end
 
+#Strructs part of Abstact type TransmissionLine
 struct TLBasicData
     voltage_kv::Int
     n_circuits::Int
     n_ground_wire::Int
     state::String
     structure_type::String
+    structure_code::String
 end
 struct TLGeometry
     x_coordinates::Matrix{Float64}
@@ -61,11 +87,13 @@ struct TLConductor
     type::String
     name::String
     stranding::String
-    diameter::Float64
-    gmr::Float64
-    #conductor_selfL::Float64
     bundling::Int
     bundlingspacing::Float64
+    diameter::Float64
+    gmr::Float64
+    Rac_75::Float64
+    Lintenal::Float64
+    Cintenal::Float64
 end
 
 struct TLGroundWire
@@ -73,7 +101,9 @@ struct TLGroundWire
     stranding::String
     diameter::Float64
     gmr::Float64
-    #conductor_selfL::Float64
+    Rac_75::Float64
+    Lintenal::Float64
+    Cintenal::Float64
 end
 
 struct ElectricalParameters

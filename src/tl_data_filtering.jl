@@ -49,8 +49,8 @@ function get_bordering_states( df_us_states::DataFrame, user_filter::TLFilters, 
 
     #Find Bordering states using df_us_states
     for row in eachrow(df_us_states)
-        if strip( lowercase(user_filter.state[index_checked]) ) == strip( lowercase( row[2] ) )
-            bordering_states_v = split(row[4], ',')
+        if strip( lowercase(user_filter.state[index_checked]) ) == strip( lowercase( row[ COL_INDEX_BORDERING_STATES["state"] ] ) )
+            bordering_states_v = split( row[ COL_INDEX_BORDERING_STATES["bordering_states"] ], ',')
             clear_string_v_lead_trail_spaces!( bordering_states_v )
             return bordering_states_v
         end
@@ -212,7 +212,7 @@ function get_tl_basicdata( df::DataFrame, rowindex::Int = 1 )::TLBasicData
     if nrow(df) < 1
         error( "Please review DataFrame argument passed to $(nameof(var"#self#")) function, it has no data." )
     end
-    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ] )
+    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ] )
 end
 
 function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
@@ -245,31 +245,3 @@ function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int =
 end
 
 
-#Read XLSX file with typical US tower Geometries
-file_rel_path     = "src/data/Tower_geometries_DB.xlsx"
-sheet_tl_geometry = "TL_Geometry"
-sheet_us_states   = "Neighboring"
-#Load Data
-df_tl_geometry    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_geometry) )
-df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
-
-#Set filtering options
-tl1_filter        = TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
-
-println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
-filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
-
-println(filt_df[:,1:7])
-println("N TRANSMISSION LINES:\n", nrow(filt_df))
-
-
-get_filter_with_neighboring_states!( tl1_filter, df_us_states_info )
-println("FILTER INCLUDING NEIGHBORING STATES: $(tl1_filter.state)")
-filt_df_neigh_states = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
-
-println(filt_df_neigh_states[:,1:7])
-println("N TRANSMISSION LINES:\n", nrow(filt_df_neigh_states))
-
-tl1_basicdata = get_tl_basicdata( filt_df_neigh_states )
-
-tl1_geometry = get_tl_geometry( filt_df_neigh_states, tl1_basicdata )
