@@ -45,3 +45,7 @@ conductor2_filter  = get_struct_conductorfilters( ["Acsr"], [954.0] )
 #filt_conductor2_df  = get_df_single_str_filter( df_conductors, conductor2_filter, "size_kcmil" )
 filt_conductor2_df = get_tl_conductor( df_conductors, conductor2_filter )
 
+bundling = 2
+bundl_spacing = 18
+
+tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata, 2, 18, 1)

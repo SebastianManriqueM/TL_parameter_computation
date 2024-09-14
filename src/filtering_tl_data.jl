@@ -18,7 +18,18 @@ function clear_string_v_lead_trail_spaces!( string_v )
     end
 end
 
-function compare_index_v_dimension( index::Int, vector , function_name)
+function check_index_df_rows( index::Int, df::DataFrame, function_name )
+    n_rows_df = nrow(df)
+    if n_rows_df < 1
+        error( "Please review DataFrame argument provided to $function_name() function, it has no data." )
+    elseif index > n_rows_df
+        @warn( "rowindex=$index provided to $function_name() function, exceeds dataframe index. It was changed to $n_rows_df" )
+        index = n_rows_df
+    end
+    return index
+end
+
+function compare_index_v_dimension!( index::Int, vector , function_name)
     if index > length( vector )
         len = length( vector )
         @warn("Index given for $(function_name) was modified from $index to $len because it exceeds the dimension of the vector.")
@@ -27,7 +38,7 @@ function compare_index_v_dimension( index::Int, vector , function_name)
         @warn("Index given for $(function_name) was modified from $index to 1 because it exceeds the dimension of the vector.")
         index = 1
     end
-    return index
+    #return index
 end
 
 #For now it only works for one position
@@ -208,13 +219,14 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
 end
 
 function get_tl_basicdata( df::DataFrame, rowindex::Int = 1 )::TLBasicData
-    if nrow(df) < 1
-        error( "Please review DataFrame argument passed to $(nameof(var"#self#")) function, it has no data." )
-    end
+    rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
+
     return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ] )
 end
 
 function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
+    rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
+
     n_cables = ( basicdata.n_circuits * 3 ) + basicdata.n_ground_wire
     x_coord  = zeros( 1 , n_cables )
     y_coord  = zeros( 1 , n_cables )

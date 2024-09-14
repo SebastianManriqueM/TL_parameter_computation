@@ -42,7 +42,7 @@ COL_INDEX_MAP_TL = Dict(
 
 COL_INDEX_BORDERING_STATES = Dict(
     "number"             => 1,
-    "state"             => 2,
+    "state"              => 2,
     "abreviation"        => 3,
     "bordering_states"   => 4,
     "n_bordering_states" => 5
@@ -107,16 +107,18 @@ end
 
 struct TLConductor
     type::String
-    name::String
+    codeword::String
     bundling::Int
     bundlingspacing::Float64
     stranding::String
     kcmil::Float64
     diameter::Float64
     gmr::Float64
-    Rac_75::Float64
-    Lintenal::Float64
-    Cintenal::Float64
+    Rac_tnom::Float64
+    Linternal::Float64
+    Cinternal::Float64
+    ampacity::Float64
+    #weight::Float64 #-Could be interesting to add constraints
 end
 
 struct TLGroundWire
