@@ -49,3 +49,6 @@ bundling = 2
 bundl_spacing = 18
 
 tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata, 2, 18, 1)
+
+
+##WORK ON ADD GET CONDUCTOR TYPICAL

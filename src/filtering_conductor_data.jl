@@ -78,9 +78,58 @@ function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterKcm )
     return filt_df
 end
 
-function get_conductor_data( df::DataFrame, rowindex::Int = 1 )::TLConductor
-    if nrow(df) < 1
-        error( "Please review DataFrame argument passed to $(nameof(var"#self#")) function, it has no data." )
+#CONTINUE HERE!!!!!!!!!!!!!!!
+function get_conductor_data( df::DataFrame, basicdata::TLBasicData, bundling=0, bundlingspacing=18, rowindex::Int = 1 )::TLConductor
+    rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
+    println("After checking index: ", rowindex)
+    if bundling == 0
+        if basicdata.voltage_kv > 700
+            bundling = 4
+        elseif basicdata.voltage_kv > 345
+            bundling = 3
+        elseif basicdata.voltage_kv > 138
+            bundling = 2
+        else
+            bundling = 1
+        end
     end
-    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ] )
+
+    type            = df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]
+    codeword        = df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]
+    stranding       = df[ rowindex, COL_INDEX_CONDUCTOR["stranding"] ]
+    kcmil           = df[ rowindex, COL_INDEX_CONDUCTOR["size_kcmil"] ]
+    diameter        = df[ rowindex, COL_INDEX_CONDUCTOR["diameter_inch"] ] 
+
+    if df[ rowindex, COL_INDEX_CONDUCTOR["R_75AC_ohm_kft"] ] > 0
+        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_75AC_ohm_kft"] ]
+    elseif df[ rowindex, COL_INDEX_CONDUCTOR["R_50AC_ohm_kft"] ] > 0
+        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_50AC_ohm_kft"] ]
+        @warn("There is no resistance data at 75 degrees for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor. It was used the value at 50 degrees.")
+    elseif df[ rowindex, COL_INDEX_CONDUCTOR["R_25AC_ohm_kft"] ] > 0
+        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_25AC_ohm_kft"] ]
+        @warn("There is no resistance data at 75 degrees for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor. It was used the value at 25 degrees.")
+    else
+        @error("There is no resistance for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor.")
+    end
+    
+    Lintrenal       = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
+    gmr             = 1/( ℯ^(Lintrenal) )
+    Cinternal       = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
+    ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
+
+    return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, Lintrenal, Cinternal, ampacity )
 end
+
+#struct TLConductor
+#    type::String
+#    name::String
+#    bundling::Int
+#    bundlingspacing::Float64
+#    stranding::String
+#    kcmil::Float64
+#    diameter::Float64
+#    gmr::Float64
+#    Rac_75::Float64
+#    Lintenal::Float64
+#    Cintenal::Float64
+#end
