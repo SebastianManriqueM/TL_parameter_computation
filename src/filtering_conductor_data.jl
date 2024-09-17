@@ -109,7 +109,7 @@ function get_conductor_data(
     df::DataFrame, 
     basicdata::TLBasicData, 
     bundling::Int=0, 
-    bundlingspacing::FLoat=18, 
+    bundlingspacing::Float64=18, 
     rowindex::Int = 1 
     )::TLConductor
 
