@@ -20,7 +20,7 @@ function check_voltage_availability( value )
 end
 
 function clear_string_v_lead_trail_spaces!( 
-    string_v::Union{Vector{String}, Matrix{String}} 
+    string_v::Union{Vector{String}, Matrix{String}, Vector{SubString{String}}} 
     )
     i = 1
     for string in string_v
