@@ -81,7 +81,6 @@ end
 #CONTINUE HERE!!!!!!!!!!!!!!!
 function get_conductor_data( df::DataFrame, basicdata::TLBasicData, bundling=0, bundlingspacing=18, rowindex::Int = 1 )::TLConductor
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
-    println("After checking index: ", rowindex)
     if bundling == 0
         if basicdata.voltage_kv > 700
             bundling = 4

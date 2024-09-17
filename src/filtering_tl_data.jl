@@ -29,7 +29,7 @@ function check_index_df_rows( index::Int, df::DataFrame, function_name )
     return index
 end
 
-function compare_index_v_dimension!( index::Int, vector , function_name)
+function compare_index_v_dimension( index::Int, vector , function_name)
     if index > length( vector )
         len = length( vector )
         @warn("Index given for $(function_name) was modified from $index to $len because it exceeds the dimension of the vector.")
@@ -38,7 +38,7 @@ function compare_index_v_dimension!( index::Int, vector , function_name)
         @warn("Index given for $(function_name) was modified from $index to 1 because it exceeds the dimension of the vector.")
         index = 1
     end
-    #return index
+    return index
 end
 
 #For now it only works for one position
