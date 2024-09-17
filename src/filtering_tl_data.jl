@@ -1,5 +1,14 @@
 include("definitions.jl")
 
+function get_user_filter_for_tl_geometry( 
+    voltage::Int, 
+    n_circuits::Int, 
+    n_ground_wires::Int=2, 
+    v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
+    v_str_structure_types::Union{Vector{String}, Matrix{String}}=[""]
+    )::TLFilters
+    return TLFilters( voltage, n_circuits, n_ground_wires, v_str_states, v_str_structure_types )
+end
 
 function check_voltage_availability( value )
     for element in DATA_SET_TL_VOLTAGES
@@ -10,7 +19,9 @@ function check_voltage_availability( value )
     return false
 end
 
-function clear_string_v_lead_trail_spaces!( string_v )
+function clear_string_v_lead_trail_spaces!( 
+    string_v::Union{Vector{String}, Matrix{String}} 
+    )
     i = 1
     for string in string_v
         string_v[i] = strip( string )
@@ -18,7 +29,11 @@ function clear_string_v_lead_trail_spaces!( string_v )
     end
 end
 
-function check_index_df_rows( index::Int, df::DataFrame, function_name )
+function check_index_df_rows( 
+    index::Int, 
+    df::DataFrame, 
+    function_name 
+    )
     n_rows_df = nrow(df)
     if n_rows_df < 1
         error( "Please review DataFrame argument provided to $function_name() function, it has no data." )
@@ -29,7 +44,11 @@ function check_index_df_rows( index::Int, df::DataFrame, function_name )
     return index
 end
 
-function compare_index_v_dimension( index::Int, vector , function_name)
+function compare_index_v_dimension( 
+    index::Int, 
+    vector , 
+    function_name
+    )
     if index > length( vector )
         len = length( vector )
         @warn("Index given for $(function_name) was modified from $index to $len because it exceeds the dimension of the vector.")
@@ -42,7 +61,11 @@ function compare_index_v_dimension( index::Int, vector , function_name)
 end
 
 #For now it only works for one position
-function get_bordering_states( df_us_states::DataFrame, user_filter::TLFilters, index::Int = 1 )
+function get_bordering_states( 
+    df_us_states::DataFrame, 
+    user_filter::TLFilters, 
+    index::Int = 1 
+    )
 
     #Check index is between the user_filter.state Vector limits
     index_checked = compare_index_v_dimension( index, user_filter.state, nameof(var"#self#"))
@@ -66,13 +89,20 @@ function get_bordering_states( df_us_states::DataFrame, user_filter::TLFilters, 
     @error( "$(user_filter.state[index_checked]) was not found to obtain its bordering states. Check TLFilters.state[index]"  )
 end
 
-function get_filter_with_neighboring_states!( user_filter::TLFilters, df_us_states::DataFrame, index::Int = 1 )
+function get_filter_with_neighboring_states!( 
+    user_filter::TLFilters, 
+    df_us_states::DataFrame, 
+    index::Int = 1 
+    )
     bord_states = get_bordering_states( df_us_states, user_filter, index )
     append!( user_filter.state, bord_states )
 end
 
 
-function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TLFilters )
+function get_voltage_filtered_tl_df( 
+    df::DataFrame, 
+    user_filter::TLFilters 
+    )
     if !(check_voltage_availability( user_filter.voltage_kv ))
         error("The current data set does not include information of Tower Geometries for $(user_filter.voltage_kv) kV. The dataset includes information for the following voltage levels (kV): $DATA_SET_TL_VOLTAGES")
     end
@@ -80,7 +110,11 @@ function get_voltage_filtered_tl_df( df::DataFrame, user_filter::TLFilters )
 end
 
 
-function get_df_single_str_filter( df::DataFrame, user_filter::TLFilters, key_df_column::String="state" )
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::TLFilters, 
+    key_df_column::String="state" 
+    )
     index_df = COL_INDEX_MAP_TL[ key_df_column ]
     if occursin( strip( lowercase("state") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.state

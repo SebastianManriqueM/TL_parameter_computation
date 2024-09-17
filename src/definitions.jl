@@ -77,9 +77,7 @@ mutable struct TLFilters <: FilterTLGeomatry
     state::Union{Vector{String}, Matrix{String}}
     structure_type::Union{Vector{String}, Matrix{String}}
 
-    # Inner constructor with default values
-    TLFilters(voltage_kv::Int, n_circuits::Int, n_ground_wire::Int, state::Union{Vector{String}, Matrix{String}} = [""], structure_type::Union{Vector{String}, Matrix{String}} = [""]) = new(voltage_kv, n_circuits, n_ground_wire, state, structure_type)
-end
+ end
 
 mutable struct ConductorFilterName <: FilterConductor
     type::Union{Vector{String}, Matrix{String}}

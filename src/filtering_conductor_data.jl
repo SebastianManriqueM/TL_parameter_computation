@@ -1,14 +1,27 @@
 include("definitions.jl")
 
-function get_struct_conductorfilters( type::Union{Vector{String}, Matrix{String}}, name::Union{Vector{String}, Matrix{String}} )::ConductorFilterName
+function get_struct_conductorfilters( 
+    type::Union{Vector{String}, Matrix{String}}, 
+    name::Union{Vector{String}, Matrix{String}} 
+    )::ConductorFilterName
+
     return ConductorFilterName( type, name )
 end
 
-function get_struct_conductorfilters( type::Union{Vector{String}, Matrix{String}}, kcm::Union{Vector{Float64}, Matrix{Float64}} )::ConductorFilterKcm
+function get_struct_conductorfilters( 
+    type::Union{Vector{String}, Matrix{String}}, 
+    kcm::Union{Vector{Float64}, Matrix{Float64}} 
+    )::ConductorFilterKcm
+
     return ConductorFilterKcm( type, kcm )
 end
 
-function get_df_single_str_filter( df::DataFrame, user_filter::ConductorFilterName, key_df_column::String="type" )
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::ConductorFilterName, 
+    key_df_column::String="type" 
+    )
+
     index_df = COL_INDEX_CONDUCTOR[ key_df_column ]
     if occursin( strip( lowercase("type") ) , strip( lowercase(key_df_column) ) )
         user_filter_str_v = user_filter.type
@@ -22,7 +35,12 @@ function get_df_single_str_filter( df::DataFrame, user_filter::ConductorFilterNa
     return filter(filter_func, df)
 end
 
-function get_df_single_str_filter( df::DataFrame, user_filter::ConductorFilterKcm, key_df_column::String="type" )
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::ConductorFilterKcm, 
+    key_df_column::String="type" 
+    )
+
     index_df = COL_INDEX_CONDUCTOR[ key_df_column ]
     if occursin( strip( lowercase("type") ) , strip( lowercase(key_df_column) ) )
         user_filter_v = user_filter.type
@@ -40,7 +58,11 @@ function get_df_single_str_filter( df::DataFrame, user_filter::ConductorFilterKc
 end
 
 
-function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterName )
+function get_tl_conductor( 
+    df::DataFrame, 
+    user_filter::ConductorFilterName 
+    )
+
     #conductor_type - AAC, ACSR, AAAC, ACAR, ACCC
     filt_df = get_df_single_str_filter( df, user_filter, "type" )
     if nrow(filt_df) < 2
@@ -59,7 +81,11 @@ function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterName )
     return filt_df
 end
 
-function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterKcm )
+function get_tl_conductor( 
+    df::DataFrame, 
+    user_filter::ConductorFilterKcm 
+    )
+
     #conductor_type - AAC, ACSR, AAAC, ACAR, ACCC
     filt_df = get_df_single_str_filter( df, user_filter, "type" )
     if nrow(filt_df) < 2
@@ -79,7 +105,14 @@ function get_tl_conductor( df::DataFrame, user_filter::ConductorFilterKcm )
 end
 
 #CONTINUE HERE!!!!!!!!!!!!!!!
-function get_conductor_data( df::DataFrame, basicdata::TLBasicData, bundling=0, bundlingspacing=18, rowindex::Int = 1 )::TLConductor
+function get_conductor_data( 
+    df::DataFrame, 
+    basicdata::TLBasicData, 
+    bundling::Int=0, 
+    bundlingspacing::FLoat=18, 
+    rowindex::Int = 1 
+    )::TLConductor
+
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
     if bundling == 0
         if basicdata.voltage_kv > 700
@@ -119,16 +152,3 @@ function get_conductor_data( df::DataFrame, basicdata::TLBasicData, bundling=0, 
     return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, Lintrenal, Cinternal, ampacity )
 end
 
-#struct TLConductor
-#    type::String
-#    name::String
-#    bundling::Int
-#    bundlingspacing::Float64
-#    stranding::String
-#    kcmil::Float64
-#    diameter::Float64
-#    gmr::Float64
-#    Rac_75::Float64
-#    Lintenal::Float64
-#    Cintenal::Float64
-#end

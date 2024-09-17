@@ -18,7 +18,7 @@ df_tl_examples    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_dataset) )
 
 
 #Set filtering options
-tl1_filter        = TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+tl1_filter        = get_user_filter_for_tl_geometry( 345, 2, 2, ["Ohio"], ["Lattice"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
 
 println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
 filt_tl_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
@@ -51,7 +51,10 @@ filt_conductor2_df = get_tl_conductor( df_conductors, conductor2_filter )
 bundling = 2
 bundl_spacing = 18
 
-tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata, 2, 18, 1)
+tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata, 2, 18.0, 1)
 
 
 ##WORK ON ADD GET CONDUCTOR TYPICAL
+
+
+## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE
