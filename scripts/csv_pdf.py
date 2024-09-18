@@ -37,10 +37,10 @@ def eliminate_spaces_of_names( original_string, substring ):
 
     return modified_string
 
-index_file = 3
-file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data", "ACAR_electrical_data_CME", "ACCC_electrical_data_ctc"]
-first_substring = [ "Turkey" , "Peachbell", "Pelican", "OCEANSIDE"]
-last_substring  = ["*STOCKED", "*STOCKED", "Kingfisher*", "SR Bluebird"]
+index_file = 5
+file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data", "ACAR_electrical_data_CME", "ACCC_electrical_data_ctc", "GW_Alumoweld_data_afl", "GW-aluminum-clad steel"]
+first_substring = [ "Turkey" , "Peachbell", "Pelican", "OCEANSIDE", "19 No. 8", "37/5" ]
+last_substring  = ["*STOCKED", "*STOCKED", "Kingfisher*", "SR Bluebird", "8\nNUMBER &", "All weights"]
 
 folder_name = "cable_data"
 pdf_path    = folder_name + "/" + file_name[index_file] + ".pdf"
