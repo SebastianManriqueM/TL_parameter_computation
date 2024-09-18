@@ -1,6 +1,6 @@
 include("definitions.jl")
 
-function get_struct_conductorfilters( 
+function get_struct_conductor_filters( 
     type::Union{Vector{String}, Matrix{String}}, 
     name::Union{Vector{String}, Matrix{String}} 
     )::ConductorFilterName
@@ -8,7 +8,7 @@ function get_struct_conductorfilters(
     return ConductorFilterName( type, name )
 end
 
-function get_struct_conductorfilters( 
+function get_struct_conductor_filters( 
     type::Union{Vector{String}, Matrix{String}}, 
     kcm::Union{Vector{Float64}, Matrix{Float64}} 
     )::ConductorFilterKcm
@@ -16,10 +16,29 @@ function get_struct_conductorfilters(
     return ConductorFilterKcm( type, kcm )
 end
 
+
+function get_struct_ground_wire_filters( 
+    type::Union{Vector{String}, Matrix{String}}, 
+    awg::Union{Vector{String}, Matrix{String}} 
+    )::GroundWireFilterAWG
+
+    return GroundWireFilterAWG( type, awg )
+end
+
+function get_struct_ground_wire_filters( 
+    type::Union{Vector{String}, Matrix{String}}, 
+    kcm::Union{Vector{Float64}, Matrix{Float64}} 
+    )::GroundWireFilterKcm
+
+    return GroundWireFilterKcm( type, kcm )
+end
+
+
+
 function get_df_single_str_filter( 
     df::DataFrame, 
     user_filter::ConductorFilterName, 
-    key_df_column::String="type" 
+    key_df_column::String = "type" 
     )
 
     index_df = COL_INDEX_CONDUCTOR[ key_df_column ]
@@ -37,11 +56,16 @@ end
 
 function get_df_single_str_filter( 
     df::DataFrame, 
-    user_filter::ConductorFilterKcm, 
-    key_df_column::String="type" 
+    user_filter::Union{ConductorFilterKcm, GroundWireFilterKcm },
+    key_df_column::String = "type" 
     )
 
-    index_df = COL_INDEX_CONDUCTOR[ key_df_column ]
+    if typeof(ground_w1_filter) == GroundWireFilterKcm
+        index_df = COL_INDEX_GROUND_WIRE[ key_df_column ]
+    else
+        index_df = COL_INDEX_CONDUCTOR[ key_df_column ]
+    end
+
     if occursin( strip( lowercase("type") ) , strip( lowercase(key_df_column) ) )
         user_filter_v = user_filter.type
         filter_func( row ) = any( s -> strip( lowercase(s) ) == coalesce( strip(lowercase(row[index_df])) ) , user_filter_v )
@@ -89,7 +113,7 @@ function get_tl_conductor(
     #conductor_type - AAC, ACSR, AAAC, ACAR, ACCC
     filt_df = get_df_single_str_filter( df, user_filter, "type" )
     if nrow(filt_df) < 2
-        @warn( "Currently, there is only one $(user_filter.conductor_type) conductor type. Other filters were neglected." )
+        @warn( "Currently, there is only one $(user_filter.type) conductor type. Other filters were neglected." )
         return filt_df
     end
 
@@ -104,12 +128,40 @@ function get_tl_conductor(
     return filt_df
 end
 
+
+#TODO INCLUDE HERE get_tl_ground_wire() --AWG
+
+function get_tl_ground_wire( 
+    df::DataFrame, 
+    user_filter::GroundWireFilterKcm 
+    )
+
+    #conductor_type - AAC, ACSR, AAAC, ACAR, ACCC
+    filt_df = get_df_single_str_filter( df, user_filter, "type" )
+    if nrow(filt_df) < 2
+        @warn( "Currently, there is only one $(user_filter.type) conductor type. Other filters were neglected." )
+        return filt_df
+    end
+
+    #Conductor codeword
+    filt_df2   = get_df_single_str_filter( filt_df, user_filter, "size_kcmil" )
+    if nrow(filt_df2) < 1
+        @warn( "Currently there is no a conductor that match all the selected criteria. It was applied just conductor type filter of $(user_filter.type)." )
+        return filt_df
+    end
+    filt_df = filt_df2
+
+    return filt_df
+end
+
+
+
 #CONTINUE HERE!!!!!!!!!!!!!!!
 function get_conductor_data( 
     df::DataFrame, 
     basicdata::TLBasicData, 
     bundling::Int = 0, 
-    bundlingspacing::Float64 = 18, 
+    bundlingspacing::Float64 = 18.0, 
     rowindex::Int = 1 
     )::TLConductor
 

@@ -63,6 +63,21 @@ COL_INDEX_CONDUCTOR = Dict(
     "ampacity_a"     => 12
 )
 
+
+COL_INDEX_GROUND_WIRE = Dict(
+    "type"               => 1,
+    "awg"                => 2,
+    "size_kcmil"         => 3,
+    "wire_diameter_inch" => 4,
+    "diameter_inch"      => 5,
+    "breaking_load_lb"   => 6,
+    "weight_lb_kft"      => 7,
+    "R_20dc_ohm_kft"     => 8,
+    "area_inches"        => 9
+)
+
+
+
 abstract type FiltersStructs end
 
 abstract type FilterTLGeomatry <: FiltersStructs end
@@ -85,6 +100,16 @@ mutable struct ConductorFilterName <: FilterConductor
 end
 
 mutable struct ConductorFilterKcm <: FilterConductor
+    type::Union{Vector{String}, Matrix{String}}
+    kcmil::Union{Vector{Float64}, Matrix{Float64}}
+end
+
+mutable struct GroundWireFilterAWG <: FilterConductor
+    type::Union{Vector{String}, Matrix{String}}
+    awg::Union{Vector{String}, Matrix{String}}
+end
+
+mutable struct GroundWireFilterKcm <: FilterConductor
     type::Union{Vector{String}, Matrix{String}}
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
@@ -117,16 +142,18 @@ struct TLConductor
     Cinternal::Float64
     ampacity::Float64
     #weight::Float64 #-Could be interesting to add constraints
+    #strenght::Float64 #-Could be interesting to add constraints
 end
 
 struct TLGroundWire
     type::String
-    stranding::String
+    awg::String
+    kcmil::Float64
     diameter::Float64
     gmr::Float64
     Rac_75::Float64
-    Lintenal::Float64
-    Cintenal::Float64
+    Linternal::Float64
+    Cinternal::Float64
 end
 
 struct ElectricalParameters
