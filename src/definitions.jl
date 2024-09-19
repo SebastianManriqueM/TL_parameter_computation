@@ -80,12 +80,16 @@ COL_INDEX_GROUND_WIRE = Dict(
 
 abstract type FiltersStructs end
 
-abstract type FilterTLGeomatry <: FiltersStructs end
+abstract type FilterTLGeometry <: FiltersStructs end
 
-abstract type FilterConductor <: FiltersStructs end
+abstract type FilterCables <: FiltersStructs end
+
+abstract type FilterConductor <: FilterCables end
+
+abstract type FilterGroundWire <: FilterCables end
 
 #Struct for user filter of transmission lines geometries
-mutable struct TLFilters <: FilterTLGeomatry
+mutable struct TLFilters <: FilterTLGeometry
     voltage_kv::Int
     n_circuits::Int
     n_ground_wire::Int
@@ -104,12 +108,12 @@ mutable struct ConductorFilterKcm <: FilterConductor
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
 
-mutable struct GroundWireFilterAWG <: FilterConductor
+mutable struct GroundWireFilterAWG <: FilterGroundWire
     type::Union{Vector{String}, Matrix{String}}
     awg::Union{Vector{String}, Matrix{String}}
 end
 
-mutable struct GroundWireFilterKcm <: FilterConductor
+mutable struct GroundWireFilterKcm <: FilterGroundWire
     type::Union{Vector{String}, Matrix{String}}
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
@@ -122,6 +126,8 @@ struct TLBasicData
     state::String
     structure_type::String
     structure_code::String
+    S_rated::Float64
+    distance::Float64
 end
 struct TLGeometry
     x_coordinates::Matrix{Float64}
@@ -151,7 +157,7 @@ struct TLGroundWire
     kcmil::Float64
     diameter::Float64
     gmr::Float64
-    Rac_75::Float64
+    Rdc_20::Float64
     Linternal::Float64
     Cinternal::Float64
 end

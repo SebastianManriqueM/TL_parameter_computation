@@ -118,7 +118,7 @@ function get_conductor_data(
     end
     
     Lintrenal       = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
-    gmr             = 1/( ℯ^(Lintrenal) )
+    gmr             = 1/ℯ^(Lintrenal)
     Cinternal       = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
     ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
 

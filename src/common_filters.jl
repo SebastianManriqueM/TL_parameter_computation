@@ -40,6 +40,27 @@ end
 #|------------------------------------------------|
 #|------------SINGLE FILTERS FUNCTIONS------------|
 #|________________________________________________|
+
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::TLFilters, 
+    key_df_column::String="state" 
+    )
+    index_df = COL_INDEX_MAP_TL[ key_df_column ]
+    if occursin( strip( lowercase("state") ) , strip( lowercase(key_df_column) ) )
+        user_filter_str_v = user_filter.state
+    elseif occursin( strip( lowercase("structure_type") ) , strip( lowercase(key_df_column) ) )
+        user_filter_str_v = user_filter.structure_type
+    else
+        @error("Please arguments provided to $(nameof(var"#self#")) function. In this case, it was expected a TL Geometry DataFrame and you can set 'key_df_column' argument as 'state' or 'structure_type'.")
+    end
+    # Define the filtering function
+    # **This filter has a Bug for STATES since "Kansas" is a substring of "Arkansas"
+    filter_func( row ) = any( s -> occursin( strip( lowercase(s) ), coalesce( strip(lowercase(row[index_df])) ) ), user_filter_str_v )
+    return filter(filter_func, df)
+end
+
+
 function get_df_single_str_filter( 
     df::DataFrame, 
     user_filter::Union{ConductorFilterName, GroundWireFilterAWG},

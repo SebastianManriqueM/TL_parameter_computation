@@ -80,61 +80,25 @@ end
 #|-------------GET TL CONDUCTOR STRUCT------------|
 #|________________________________________________|
 
-#=struct TLGroundWire
-    type::String
-    awg::String
-    kcmil::Float64
-    diameter::Float64
-    gmr::Float64
-    Rac_75::Float64
-    Linternal::Float64
-    Cinternal::Float64
-end=#
+
 
 function get_ground_wire_data( 
     df::DataFrame, 
     basicdata::TLBasicData, 
-    bundling::Int = 0, 
-    bundlingspacing::Float64 = 18.0, 
     rowindex::Int = 1 
-    )::TLConductor
+    )::TLGroundWire
 
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
-    if bundling == 0
-        if basicdata.voltage_kv > 700
-            bundling = 4
-        elseif basicdata.voltage_kv > 345
-            bundling = 3
-        elseif basicdata.voltage_kv > 138
-            bundling = 2
-        else
-            bundling = 1
-        end
-    end
 
-    type            = df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]
-    codeword        = df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]
-    stranding       = df[ rowindex, COL_INDEX_CONDUCTOR["stranding"] ]
-    kcmil           = df[ rowindex, COL_INDEX_CONDUCTOR["size_kcmil"] ]
-    diameter        = df[ rowindex, COL_INDEX_CONDUCTOR["diameter_inch"] ] 
+    type      = df[ rowindex, COL_INDEX_GROUND_WIRE["type"] ]
+    awg       = df[ rowindex, COL_INDEX_GROUND_WIRE["awg"] ]
+    kcmil     = df[ rowindex, COL_INDEX_GROUND_WIRE["size_kcmil"] ]
+    diameter  = df[ rowindex, COL_INDEX_GROUND_WIRE["diameter_inch"] ]
+    gmr       = ℯ^(-1/4) * (0.5 * diameter) * (1/12)                    #GMR in feet
+    Rdc_20    = df[ rowindex, COL_INDEX_GROUND_WIRE["R_20dc_ohm_kft"] ]
+    Linternal = log(1/gmr)
+    Cinternal = 0
 
-    if df[ rowindex, COL_INDEX_CONDUCTOR["R_75AC_ohm_kft"] ] > 0
-        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_75AC_ohm_kft"] ]
-    elseif df[ rowindex, COL_INDEX_CONDUCTOR["R_50AC_ohm_kft"] ] > 0
-        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_50AC_ohm_kft"] ]
-        @warn("There is no resistance data at 75 degrees for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor. It was used the value at 50 degrees.")
-    elseif df[ rowindex, COL_INDEX_CONDUCTOR["R_25AC_ohm_kft"] ] > 0
-        Rac_tnom    = df[ rowindex, COL_INDEX_CONDUCTOR["R_25AC_ohm_kft"] ]
-        @warn("There is no resistance data at 75 degrees for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor. It was used the value at 25 degrees.")
-    else
-        @error("There is no resistance for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor.")
-    end
-    
-    Lintrenal       = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
-    gmr             = 1/( ℯ^(Lintrenal) )
-    Cinternal       = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
-    ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
-
-    return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, Lintrenal, Cinternal, ampacity )
+    return TLGroundWire( type, awg, kcmil, diameter, gmr, Rdc_20, Linternal, Cinternal )
 end
 

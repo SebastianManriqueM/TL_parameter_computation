@@ -96,25 +96,6 @@ function get_voltage_filtered_tl_df(
 end
 
 
-function get_df_single_str_filter( 
-    df::DataFrame, 
-    user_filter::TLFilters, 
-    key_df_column::String="state" 
-    )
-    index_df = COL_INDEX_MAP_TL[ key_df_column ]
-    if occursin( strip( lowercase("state") ) , strip( lowercase(key_df_column) ) )
-        user_filter_str_v = user_filter.state
-    elseif occursin( strip( lowercase("structure_type") ) , strip( lowercase(key_df_column) ) )
-        user_filter_str_v = user_filter.structure_type
-    else
-        @error("Please arguments provided to $(nameof(var"#self#")) function. In this case, it was expected a TL Geometry DataFrame and you can set 'key_df_column' argument as 'state' or 'structure_type'.")
-    end
-    # Define the filtering function
-    # **This filter has a Bug for STATES since "Kansas" is a substring of "Arkansas"
-    filter_func( row ) = any( s -> occursin( strip( lowercase(s) ), coalesce( strip(lowercase(row[index_df])) ) ), user_filter_str_v )
-    return filter(filter_func, df)
-end
-
 
 
 """
@@ -238,10 +219,16 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     return filt_df
 end
 
-function get_tl_basicdata( df::DataFrame, rowindex::Int = 1 )::TLBasicData
+function get_tl_basicdata( 
+    df::DataFrame, 
+    S_rated::Float64=0.0,
+    distance::Float64=0.0,
+    rowindex::Int = 1 
+    )::TLBasicData
+
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
 
-    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ] )
+    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ], S_rated, distance )
 end
 
 function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
