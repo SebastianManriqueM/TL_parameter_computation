@@ -1,4 +1,5 @@
 include("definitions.jl")
+include("common_filters.jl")
 
 function get_user_filter_for_tl_geometry( 
     voltage::Int, 
@@ -27,21 +28,6 @@ function clear_string_v_lead_trail_spaces!(
         string_v[i] = strip( string )
         i = i + 1
     end
-end
-
-function check_index_df_rows( 
-    index::Int, 
-    df::DataFrame, 
-    function_name 
-    )
-    n_rows_df = nrow(df)
-    if n_rows_df < 1
-        error( "Please review DataFrame argument provided to $function_name() function, it has no data." )
-    elseif index > n_rows_df
-        @warn( "rowindex=$index provided to $function_name() function, exceeds dataframe index. It was changed to $n_rows_df" )
-        index = n_rows_df
-    end
-    return index
 end
 
 function compare_index_v_dimension( 

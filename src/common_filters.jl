@@ -1,6 +1,8 @@
 include("definitions.jl")
 
-
+#|------------------------------------------------|
+#|--------------GET DF COL FUNCTIONS--------------|
+#|________________________________________________|
 function get_df_col_index( 
     user_filter::Union{ConductorFilterKcm, ConductorFilterName},
     key_df_column::String
@@ -13,6 +15,25 @@ function get_df_col_index(
     key_df_column::String
     )
     return COL_INDEX_GROUND_WIRE[ key_df_column ]
+end
+
+
+#|------------------------------------------------|
+#|-----------CHECK INDEX AND DIMENSSIONS----------|
+#|________________________________________________|
+function check_index_df_rows( 
+    index::Int, 
+    df::DataFrame, 
+    function_name 
+    )
+    n_rows_df = nrow(df)
+    if n_rows_df < 1
+        error( "Please review DataFrame argument provided to $function_name() function, it has no data." )
+    elseif index > n_rows_df
+        @warn( "rowindex=$index provided to $function_name() function, exceeds dataframe index. It was changed to $n_rows_df" )
+        index = n_rows_df
+    end
+    return index
 end
 
 
