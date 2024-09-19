@@ -2,6 +2,9 @@ using Parameters
 using XLSX
 using DataFrames
 
+FACTOR_FT_INCH = 1.0 / 12.0
+FACTOR_MILES_KFT = 1.0 / 5.28
+
 DATA_SET_TL_VOLTAGES = [345 500 735]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
 US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
@@ -118,7 +121,9 @@ mutable struct GroundWireFilterKcm <: FilterGroundWire
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
 
-#Strructs part of Abstact type TransmissionLine
+
+
+#Structs part of Abstact type TransmissionLine
 struct TLBasicData
     voltage_kv::Int
     n_circuits::Int
@@ -127,6 +132,7 @@ struct TLBasicData
     structure_type::String
     structure_code::String
     S_rated::Float64
+    frequency::Float64
     distance::Float64
 end
 struct TLGeometry
@@ -144,8 +150,8 @@ struct TLConductor
     diameter::Float64
     gmr::Float64
     Rac_tnom::Float64
-    Linternal::Float64
-    Cinternal::Float64
+    XLinternal::Float64
+    XCinternal::Float64
     ampacity::Float64
     #weight::Float64 #-Could be interesting to add constraints
     #strenght::Float64 #-Could be interesting to add constraints
@@ -158,8 +164,8 @@ struct TLGroundWire
     diameter::Float64
     gmr::Float64
     Rdc_20::Float64
-    Linternal::Float64
-    Cinternal::Float64
+    XLinternal::Float64
+    XCinternal::Float64
 end
 
 struct ElectricalParameters

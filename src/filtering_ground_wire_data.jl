@@ -83,8 +83,8 @@ end
 
 
 function get_ground_wire_data( 
-    df::DataFrame, 
-    basicdata::TLBasicData, 
+    df::DataFrame,
+    basicdata::TLBasicData,
     rowindex::Int = 1 
     )::TLGroundWire
 
@@ -94,11 +94,11 @@ function get_ground_wire_data(
     awg       = df[ rowindex, COL_INDEX_GROUND_WIRE["awg"] ]
     kcmil     = df[ rowindex, COL_INDEX_GROUND_WIRE["size_kcmil"] ]
     diameter  = df[ rowindex, COL_INDEX_GROUND_WIRE["diameter_inch"] ]
-    gmr       = ℯ^(-1/4) * (0.5 * diameter) * (1/12)                    #GMR in feet
+    gmr       = get_gmr_from_diameter_inch(diameter)                    #GMR in feet
     Rdc_20    = df[ rowindex, COL_INDEX_GROUND_WIRE["R_20dc_ohm_kft"] ]
-    Linternal = log(1/gmr)
-    Cinternal = 0
+    XLinternal = get_XL_from_gmr(gmr, basicdata.frequency)                                   #XLinternal in ohm/kfeet
+    XCinternal = 0
 
-    return TLGroundWire( type, awg, kcmil, diameter, gmr, Rdc_20, Linternal, Cinternal )
+    return TLGroundWire( type, awg, kcmil, diameter, gmr, Rdc_20, XLinternal, XCinternal )
 end
 

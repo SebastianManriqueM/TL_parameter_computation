@@ -104,3 +104,26 @@ function get_df_single_str_filter(
     
     return filtered_df
 end
+
+
+
+function get_gmr_from_diameter_inch(
+    diameter_inch::Float64, 
+    )
+    return ℯ^(-1/4) * (0.5 * diameter_inch) * FACTOR_FT_INCH
+end
+
+
+function get_gmr_from_XL(
+    XL::Float64, 
+    frequency::Float64
+    )
+    return 1/ℯ^( XL / (2*π*frequency) )
+end
+
+function get_XL_from_gmr(
+    gmr::Float64,
+    frequency::Float64 
+    )
+    return frequency * 0.00202237 * log(1/gmr) * FACTOR_MILES_KFT
+end

@@ -117,11 +117,11 @@ function get_conductor_data(
         @error("There is no resistance for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor.")
     end
     
-    Lintrenal       = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
-    gmr             = 1/ℯ^(Lintrenal)
-    Cinternal       = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
+    XLintrenal      = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
+    gmr             = get_gmr_from_XL(XLintrenal, basicdata.frequency)
+    XCinternal      = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
     ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
-
-    return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, Lintrenal, Cinternal, ampacity )
+    
+    return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, XLintrenal, XCinternal, ampacity )
 end
 
