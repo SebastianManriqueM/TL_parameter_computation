@@ -1,0 +1,64 @@
+include("definitions.jl")
+
+
+function get_df_col_index( 
+    user_filter::Union{ConductorFilterKcm, ConductorFilterName},
+    key_df_column::String
+    )
+    return COL_INDEX_CONDUCTOR[ key_df_column ]
+end
+
+function get_df_col_index( 
+    user_filter::Union{GroundWireFilterKcm, GroundWireFilterAWG},
+    key_df_column::String
+    )
+    return COL_INDEX_GROUND_WIRE[ key_df_column ]
+end
+
+
+#|------------------------------------------------|
+#|------------SINGLE FILTERS FUNCTIONS------------|
+#|________________________________________________|
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::Union{ConductorFilterName, GroundWireFilterAWG},
+    key_df_column::String = "type" 
+    )
+    index_df = get_df_col_index( user_filter, key_df_column )
+    if occursin( strip( lowercase("type") ) , strip( lowercase(key_df_column) ) )
+        user_filter_str_v = user_filter.type
+    elseif occursin( strip( lowercase("codeword") ) , strip( lowercase(key_df_column) ) )
+        user_filter_str_v = user_filter.codeword
+    elseif occursin( strip( lowercase("awg") ) , strip( lowercase(key_df_column) ) )
+        user_filter_str_v = user_filter.awg
+    else
+        @error("Please arguments provided to $(nameof(var"#self#")) function. In this case, it was expected a Conductors DataFrame and you can set 'key_df_column' argument as 'type' or 'name'.")
+    end
+    # Define the filtering function
+    filter_func( row ) = any( s -> strip( lowercase(s) ) == coalesce( strip(lowercase(row[index_df])) ) , user_filter_str_v )
+    return filter(filter_func, df)
+end
+
+
+
+function get_df_single_str_filter( 
+    df::DataFrame, 
+    user_filter::Union{ConductorFilterKcm, GroundWireFilterKcm },
+    key_df_column::String = "type" 
+    )
+    index_df = get_df_col_index( user_filter, key_df_column )
+
+    if occursin( strip( lowercase("type") ) , strip( lowercase(key_df_column) ) )
+        user_filter_v = user_filter.type
+        filter_func( row ) = any( s -> strip( lowercase(s) ) == coalesce( strip(lowercase(row[index_df])) ) , user_filter_v )
+        filtered_df = filter(filter_func, df)
+    elseif occursin( strip( lowercase(key_df_column) ) , strip( lowercase("size_kcmil") ) )
+        user_filter_v = user_filter.kcmil
+        filter_func2( row ) = any( s -> s == row[index_df] , user_filter_v )
+        filtered_df = filter(filter_func2, df)
+    else
+        @error("Please arguments provided to $(nameof(var"#self#")) function. In this case, it was expected a Conductors DataFrame and you can set 'key_df_column' argument as 'type' or 'size_kcmil'.")
+    end
+    
+    return filtered_df
+end

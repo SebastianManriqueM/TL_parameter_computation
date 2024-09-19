@@ -1,5 +1,6 @@
 include("filtering_tl_data.jl")
 include("filtering_conductor_data.jl")
+include("filtering_ground_wire_data.jl")
 
 using Revise
 
@@ -20,8 +21,7 @@ df_tl_examples     = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_dataset) 
 
 
 
-
-#Set filtering options
+#Set TL filtering options
 tl1_filter        = get_user_filter_for_tl_geometry( 345, 2, 2, ["Ohio"], ["Lattice"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
 
 println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
@@ -37,6 +37,9 @@ filt_tl_df_neigh_states = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
 println(filt_tl_df_neigh_states[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_tl_df_neigh_states))
+
+
+
 
 tl1_basicdata = get_tl_basicdata( filt_tl_df_neigh_states )
 tl1_geometry = get_tl_geometry( filt_tl_df_neigh_states, tl1_basicdata )
@@ -55,10 +58,14 @@ tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata)
 
 
 #GROUND WIRE - FILTER BY TYPE AND AWG
-ground_w1_filter = get_struct_ground_wire_filters( ["Alumoweld"], [49.53] )
-filt_ground_w_df = get_tl_ground_wire( df_ground_wires, ground_w1_filter )
+ground_w1_filter = get_struct_ground_wire_filters( ["Alumoweld"], ["3/8"] )
+filt_ground_w1_df = get_tl_ground_wire( df_ground_wires, ground_w1_filter )
 
-get_df_single_str_filter(df_ground_wires, ground_w1_filter, "size_kcmil")
+ground_w2_filter = get_struct_ground_wire_filters( ["Alumoweld"], [49.53] )
+filt_ground_w2_df = get_tl_ground_wire( df_ground_wires, ground_w2_filter )
+
+
+
 ##WORK ON ADD GET CONDUCTOR TYPICAL
 
 
