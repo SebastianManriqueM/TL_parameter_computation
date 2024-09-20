@@ -8,31 +8,36 @@ include("definitions.jl")
 
 
 function get_primitive_z_matrix( 
-    combinations::Vector{Vector{Int64}},
-    distance_v::Matrix{Float64},
     basicdata::TLBasicData,
+    geometry::TLGeometry,
     conductor::TLConductor,
     ground_wire::TLGroundWire, 
     )
 
     rho  = basicdata.gnd_rho
     freq = basicdata.frequency
-    res_v, 
-    GMR_v, 
-    index_c
+    #res_v, 
+    #GMR_v, 
+    #index_c
 
-    n_cond      = length( index_c )
+    n_cond      = geometry.n_cables
     z_primitive = zeros( ComplexF64, n_cond, n_cond)
     #out diagonal
     j = 1
-    for i in combinations
-        z_primitive[i[1] , i[2]] = 0.00158836*freq + ( 0.00202237*freq*( log(1/distance_v[j]) + 7.6786 + 0.5*log(rho/freq) ) )*im
+    for i in geometry.combinations
+        z_primitive[i[1] , i[2]] = 0.00158836*freq + ( 0.00202237*freq*( log(1/geometry.distances[j]) + 7.6786 + 0.5*log(rho/freq) ) )*im
         z_primitive[i[2] , i[1]] = z_primitive[i[1] , i[2]]
         j = j + 1
     end
     #diagonal
     for i = 1:n_cond
-        z_primitive[i , i] = res_v[ index_c[i] ] + 0.00158836*freq + ( 0.00202237*freq*( log(1/GMR_v[ index_c[i] ]) + 7.6786 + 0.5*log(rho/freq) ) )*im
+        #TODO Add capability to represent 2 different conductors in different circuits
+        if i <= basicdata.n_circuits * 3
+            z_primitive[i , i] = conductor.Rac_tnom + 0.00158836*freq + ( 0.00202237*freq*( log(1/conductor.gmr) + 7.6786 + 0.5*log(rho/freq) ) )*im
+        else #i <= 3 + basicdata.n_ground_wire
+            z_primitive[i , i] = ground_wire.Rdc_20 + 0.00158836*freq + ( 0.00202237*freq*( log(1/ground_wire.gmr) + 7.6786 + 0.5*log(rho/freq) ) )*im
+        end
+
     end
     return z_primitive
 end
@@ -40,7 +45,7 @@ end
 
 function initialization_tl_parameters(
     basicdata::TLBasicData,
-    tl_geometry::TLGeometry,
+    geometry::TLGeometry,
     conductor::TLConductor,
     ground_wire::TLGroundWire, 
     )::ElectricalParameters

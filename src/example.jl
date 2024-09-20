@@ -70,6 +70,7 @@ tl1_ground_wire = get_ground_wire_data(filt_ground_w2_df, tl1_basicdata)
 
 ##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 
+z_prim=get_primitive_z_matrix( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire)
 
 
 #z_m = get_primitive_z_matrix( comb, D_v, res_v, GMR_v, index_c, 100.0, 60.0 )
