@@ -131,9 +131,10 @@ mutable struct TLBasicData
     state::String
     structure_type::String
     structure_code::String
+    distance::Float64
     S_rated::Float64
     frequency::Float64
-    distance::Float64
+    gnd_rho::Float64
 end
 
 mutable struct TLGeometry

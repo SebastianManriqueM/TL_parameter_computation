@@ -224,12 +224,13 @@ function get_tl_basicdata(
     S_rated::Float64 = 0.0,
     frequency::Float64 = 60.0,
     distance::Float64 = 0.0,
+    gnd_rho::Float64 = 100,
     rowindex::Int = 1 
     )::TLBasicData
 
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
 
-    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ], S_rated, frequency, distance )
+    return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ], distance, S_rated, frequency, gnd_rho )
 end
 
 function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
