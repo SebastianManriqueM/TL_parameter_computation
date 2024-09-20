@@ -125,7 +125,7 @@ end
 
 #Structs part of Abstact type TransmissionLine
 struct TLBasicData
-    voltage_kv::Int
+    voltage_kv::Float64
     n_circuits::Int
     n_ground_wire::Int
     state::String
@@ -137,6 +137,7 @@ struct TLBasicData
 end
 
 struct TLGeometry
+    n_cables::Int
     x_coordinates::Matrix{Float64}
     y_coordinates::Matrix{Float64}
 end
