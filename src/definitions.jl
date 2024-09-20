@@ -124,7 +124,7 @@ end
 
 
 #Structs part of Abstact type TransmissionLine
-struct TLBasicData
+mutable struct TLBasicData
     voltage_kv::Float64
     n_circuits::Int
     n_ground_wire::Int
@@ -136,13 +136,13 @@ struct TLBasicData
     distance::Float64
 end
 
-struct TLGeometry
+mutable struct TLGeometry
     n_cables::Int
     x_coordinates::Matrix{Float64}
     y_coordinates::Matrix{Float64}
 end
 
-struct TLConductor
+mutable struct TLConductor
     type::String
     codeword::String
     bundling::Int
@@ -159,7 +159,7 @@ struct TLConductor
     #strenght::Float64 #-Could be interesting to add constraints
 end
 
-struct TLGroundWire
+mutable struct TLGroundWire
     type::String
     awg::String
     kcmil::Float64
@@ -170,7 +170,7 @@ struct TLGroundWire
     XCinternal::Float64
 end
 
-struct ElectricalParameters
+mutable struct ElectricalParameters
     combinations::Matrix{Float64}
     distances::Matrix{Float64}
     Zabcg::Matrix{Float64}          #Primitive Matrix
@@ -183,7 +183,7 @@ end
 
 abstract type TransmissionLine end
 
-struct Line <: TransmissionLine
+mutable struct Line <: TransmissionLine
     basicdata::TLBasicData
     geometry::TLGeometry
     conductor::TLConductor
