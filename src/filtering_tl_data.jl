@@ -2,7 +2,7 @@ include("definitions.jl")
 include("common_filters.jl")
 
 function get_user_filter_for_tl_geometry( 
-    voltage::Int, 
+    voltage::Float64, 
     n_circuits::Int, 
     n_ground_wires::Int=2, 
     v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
@@ -260,7 +260,7 @@ function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int =
         x_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ]
     end
 
-    return TLGeometry( x_coord, y_coord )
+    return TLGeometry( n_cables, x_coord, y_coord )
 end
 
 
