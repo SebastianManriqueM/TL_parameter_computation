@@ -23,7 +23,7 @@ df_tl_examples     = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_dataset) 
 
 
 #Set TL filtering options
-tl1_filter        = get_user_filter_for_tl_geometry( 345.0, 1, 2, ["Iowa"], ["Lattice"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+tl1_filter        = get_user_filter_tl_geometry( 345.0, 1, 2, ["Iowa"], ["Lattice"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
 
 println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
 filt_tl_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
@@ -71,7 +71,8 @@ tl1_ground_wire = get_ground_wire_data(filt_ground_w2_df, tl1_basicdata)
 ##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 
 
-D_v, comb = get_all_distances( tl1_geometry )
+
+#z_m = get_primitive_z_matrix( comb, D_v, res_v, GMR_v, index_c, 100.0, 60.0 )
 
 
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE

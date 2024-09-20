@@ -141,6 +141,8 @@ mutable struct TLGeometry
     n_cables::Int
     x_coordinates::Matrix{Float64}
     y_coordinates::Matrix{Float64}
+    combinations::Vector{Vector{Int64}}
+    distances::Matrix{Float64}
 end
 
 mutable struct TLConductor
@@ -172,8 +174,6 @@ mutable struct TLGroundWire
 end
 
 mutable struct ElectricalParameters
-    combinations::Vector{Vector{Int64}}
-    distances::Matrix{Float64}
     Zabcg::Matrix{Float64}          #Primitive Matrix
     Z_kron::Matrix{Float64}         #Kron reduced matrix
     Z012::Matrix{Float64}           #Sequence Matrix

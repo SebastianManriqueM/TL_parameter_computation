@@ -1,7 +1,10 @@
 include("definitions.jl")
 include("common_filters.jl")
 
-function get_user_filter_for_tl_geometry( 
+#|------------------------------------------------|
+#|----------GET STRUCT FILTERS FUNCTIONS----------|
+#|________________________________________________|
+function get_user_filter_tl_geometry( 
     voltage::Float64, 
     n_circuits::Int, 
     n_ground_wires::Int=2, 
@@ -11,6 +14,10 @@ function get_user_filter_for_tl_geometry(
     return TLFilters( voltage, n_circuits, n_ground_wires, v_str_states, v_str_structure_types )
 end
 
+
+#|------------------------------------------------|
+#|--------GET FILTERED DATAFRAME FUNCTIONS--------|
+#|________________________________________________|
 function check_voltage_availability( value )
     for element in DATA_SET_TL_VOLTAGES
         if element == value
@@ -219,12 +226,16 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     return filt_df
 end
 
+
+#|------------------------------------------------|
+#|-------------GET TL BASICDATA STRUCT------------|
+#|________________________________________________|
 function get_tl_basicdata( 
     df::DataFrame, 
     S_rated::Float64 = 0.0,
     frequency::Float64 = 60.0,
     distance::Float64 = 0.0,
-    gnd_rho::Float64 = 100,
+    gnd_rho::Float64 = 100.0,
     rowindex::Int = 1 
     )::TLBasicData
 
@@ -232,6 +243,37 @@ function get_tl_basicdata(
 
     return TLBasicData( df[ rowindex, COL_INDEX_MAP_TL["voltage_kv"] ], df[ rowindex, COL_INDEX_MAP_TL["n_circuits"] ], df[ rowindex, COL_INDEX_MAP_TL["n_ground_w"] ], df[ rowindex, COL_INDEX_MAP_TL["state"] ], df[ rowindex, COL_INDEX_MAP_TL["structure_type"] ], df[ rowindex, COL_INDEX_MAP_TL["code"] ], distance, S_rated, frequency, gnd_rho )
 end
+
+
+#|------------------------------------------------|
+#|-------------GET TL GEOMETRY STRUCT-------------|
+#|________________________________________________|
+
+function get_distance_xy( 
+    x::Union{Matrix{Float64}, Vector{Float64}},
+    y::Union{Matrix{Float64}, Vector{Float64}} 
+    )
+    return sqrt( ( x[1] - y[2] )^2 + ( y[1] - y[2] )^2 )
+end
+
+function get_all_distances(
+    n_cables::Int,
+    x_coordinates::Matrix{Float64},
+    y_coordinates::Matrix{Float64}
+    )
+    n_dist    = round( Int , ( factorial(n_cables) ) / ( factorial(2) * factorial(n_cables - 2) ) )#N distance/combinations
+    distances = zeros( 1 , n_dist)
+    iter      = combinations( collect(1:n_cables), 2 )
+    i         = 1
+    
+    for idx_v in iter
+        distances[i] = get_distance_xy( x_coordinates[idx_v] , y_coordinates[idx_v] )
+        i = i+1
+    end
+    return distances, collect(iter)
+end
+
+
 
 function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
@@ -261,7 +303,10 @@ function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int =
         x_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ]
     end
 
-    return TLGeometry( n_cables, x_coord, y_coord )
+    distances, combinations = get_all_distances( n_cables, x_coord, y_coord )
+    #println(  "distances: ", D_v, "\nCombinations: ", collect(comb) )
+
+    return TLGeometry( n_cables, x_coord, y_coord, combinations, distances )
 end
 
 

@@ -4,33 +4,45 @@ using Combinatorics
 include("definitions.jl")
 #include("common_filters.jl")
 
-function get_distance_xy( 
-    x::Union{Matrix{Float64}, Vector{Float64}},
-    y::Union{Matrix{Float64}, Vector{Float64}} 
-    )
-    return sqrt( ( x[1] - y[2] )^2 + ( y[1] - y[2] )^2 )
-end
 
-function get_all_distances(
-    t_geometry::TLGeometry
+
+
+function get_primitive_z_matrix( 
+    combinations::Vector{Vector{Int64}},
+    distance_v::Matrix{Float64},
+    basicdata::TLBasicData,
+    conductor::TLConductor,
+    ground_wire::TLGroundWire, 
     )
-    
-    n_dist = round( Int , ( factorial(t_geometry.n_cables) ) / ( factorial(2) * factorial(t_geometry.n_cables - 2) ) )#N distance/combinations
-    D_v    = zeros( 1 , n_dist)
-    iter   = combinations( collect(1:t_geometry.n_cables), 2 )
-    i      = 1
-    
-    for idx_v in iter
-        D_v[i] = get_distance_xy( t_geometry.x_coordinates[idx_v] , t_geometry.y_coordinates[idx_v] )
-        i = i+1
+
+    rho  = basicdata.gnd_rho
+    freq = basicdata.frequency
+    res_v, 
+    GMR_v, 
+    index_c
+
+    n_cond      = length( index_c )
+    z_primitive = zeros( ComplexF64, n_cond, n_cond)
+    #out diagonal
+    j = 1
+    for i in combinations
+        z_primitive[i[1] , i[2]] = 0.00158836*freq + ( 0.00202237*freq*( log(1/distance_v[j]) + 7.6786 + 0.5*log(rho/freq) ) )*im
+        z_primitive[i[2] , i[1]] = z_primitive[i[1] , i[2]]
+        j = j + 1
     end
-    return D_v, iter
+    #diagonal
+    for i = 1:n_cond
+        z_primitive[i , i] = res_v[ index_c[i] ] + 0.00158836*freq + ( 0.00202237*freq*( log(1/GMR_v[ index_c[i] ]) + 7.6786 + 0.5*log(rho/freq) ) )*im
+    end
+    return z_primitive
 end
-
 
 
 function initialization_tl_parameters(
-    basicdata::TLBasicData
+    basicdata::TLBasicData,
+    tl_geometry::TLGeometry,
+    conductor::TLConductor,
+    ground_wire::TLGroundWire, 
     )::ElectricalParameters
     dim_primitive = ( 3 * basicdata.n_circuits ) + basicdata.n_ground_wire
     dim_kron      = dim_primitive - basicdata.n_ground_wire
