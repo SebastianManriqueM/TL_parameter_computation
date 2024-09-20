@@ -171,7 +171,7 @@ mutable struct TLGroundWire
 end
 
 mutable struct ElectricalParameters
-    combinations::Matrix{Float64}
+    combinations::Vector{Vector{Int64}}
     distances::Matrix{Float64}
     Zabcg::Matrix{Float64}          #Primitive Matrix
     Z_kron::Matrix{Float64}         #Kron reduced matrix
