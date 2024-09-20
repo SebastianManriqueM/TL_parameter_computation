@@ -135,6 +135,7 @@ struct TLBasicData
     frequency::Float64
     distance::Float64
 end
+
 struct TLGeometry
     x_coordinates::Matrix{Float64}
     y_coordinates::Matrix{Float64}
@@ -169,6 +170,14 @@ struct TLGroundWire
 end
 
 struct ElectricalParameters
+    combinations::Matrix{Float64}
+    distances::Matrix{Float64}
+    Zabcg::Matrix{Float64}          #Primitive Matrix
+    Z_kron::Matrix{Float64}         #Kron reduced matrix
+    Z012::Matrix{Float64}           #Sequence Matrix
+    Zabcg_pu::Matrix{Float64}       #Primitive Matrix
+    Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
+    Z012_pu::Matrix{Float64}        #Sequence Matrix
 end
 
 abstract type TransmissionLine end
