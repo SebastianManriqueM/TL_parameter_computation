@@ -290,17 +290,26 @@ function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int =
         y_coord[ i ]       = df[ rowindex , yindex_01 + i ]
         x_coord[ i ]       = df[ rowindex , xindex_01 + i ]
         if basicdata.n_circuits == 2   
-            y_coord[ end-3+i ] = df[ rowindex , yindex_02 + i ]
-            x_coord[ end-3+i ] = df[ rowindex , xindex_02 + i ]
+            y_coord[ 3+i ] = df[ rowindex , yindex_02 + i ]
+            x_coord[ 3+i ] = df[ rowindex , xindex_02 + i ]
         end
     end
 
     #Ground wires
-    y_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ] 
-    x_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ] 
-    if basicdata.n_ground_wire == 2
-        y_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ]
-        x_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ]
+    if basicdata.n_circuits == 1
+        y_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ] 
+        x_coord[4] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ] 
+        if basicdata.n_ground_wire == 2
+            y_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "yg2_ft" ] ]
+            x_coord[5] = df[ rowindex , COL_INDEX_MAP_TL[ "xg2_ft" ] ]
+        end
+    elseif basicdata.n_circuits == 2
+        y_coord[7] = df[ rowindex , COL_INDEX_MAP_TL[ "yg1_ft" ] ] 
+        x_coord[7] = df[ rowindex , COL_INDEX_MAP_TL[ "xg1_ft" ] ] 
+        if basicdata.n_ground_wire == 2
+            y_coord[8] = df[ rowindex , COL_INDEX_MAP_TL[ "yg2_ft" ] ]
+            x_coord[8] = df[ rowindex , COL_INDEX_MAP_TL[ "xg2_ft" ] ]
+        end
     end
 
     distances, combinations = get_all_distances( n_cables, x_coord, y_coord )
