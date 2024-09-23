@@ -142,7 +142,7 @@ function get_tl_parameters(
     basicdata::TLBasicData,
     geometry::TLGeometry,
     conductor::TLConductor,
-    ground_wire::TLGroundWire, 
+    ground_wire::TLGroundWire 
     )::ElectricalParameters
     dim_primitive = ( 3 * basicdata.n_circuits ) + basicdata.n_ground_wire
     dim_kron      = dim_primitive - basicdata.n_ground_wire
@@ -166,4 +166,14 @@ function get_tl_parameters(
     b0m = 0
     
     return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
+end
+
+function get_line_struct(
+    basicdata::TLBasicData,
+    geometry::TLGeometry,
+    conductor::TLConductor,
+    ground_wire::TLGroundWire,
+    parameters::ElectricalParameters
+    )::Line
+    return Line( basicdata, geometry, conductor, ground_wire, parameters )
 end

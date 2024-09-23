@@ -65,12 +65,15 @@ filt_ground_w1_df = get_tl_ground_wire( df_ground_wires, ground_w1_filter )
 ground_w2_filter = get_struct_ground_wire_filters( ["Alumoweld"], [49.53] )
 filt_ground_w2_df = get_tl_ground_wire( df_ground_wires, ground_w2_filter )
 
-tl1_ground_wire = get_ground_wire_data(filt_ground_w2_df, tl1_basicdata)
+tl1_ground_wire = get_ground_wire(filt_ground_w2_df, tl1_basicdata)
 
 
-##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
+
 
 tl1_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire )
 
 
+tl1 = get_line_struct( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire, tl1_parameters )
+
+##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE

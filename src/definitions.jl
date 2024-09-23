@@ -209,5 +209,5 @@ mutable struct Line <: TransmissionLine
     geometry::TLGeometry
     conductor::TLConductor
     groundw::TLGroundWire
-    eparameters::ElectricalParameters
+    parameters::ElectricalParameters
 end
