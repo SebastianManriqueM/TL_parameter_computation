@@ -12,14 +12,11 @@ function get_primitive_z_matrix(
     geometry::TLGeometry,
     conductor::TLConductor,
     ground_wire::TLGroundWire, 
-    )
+    )#::Zprimitive
 
     rho  = basicdata.gnd_rho
     freq = basicdata.frequency
-    #res_v, 
-    #GMR_v, 
-    #index_c
-
+    
     n_cond      = geometry.n_cables
     z_primitive = zeros( ComplexF64, n_cond, n_cond)
     #out diagonal
@@ -42,27 +39,48 @@ function get_primitive_z_matrix(
         end
 
     end
-    return z_primitive
+    return z_primitive#Zprimitive(z_primitive)
 end
 
 
 function get_kron_reduced_z_matrix(
     basicdata::TLBasicData, 
     geometry::TLGeometry,
-    z_primitive:: Matrix{ComplexF64}
-    )
+    z_primitive::Matrix{ComplexF64}
+    )#::Zkron
     n_cond = geometry.n_cables - basicdata.n_ground_wire
-    #n_ct   = length( index_c )
-    #n_ph1  = count(x -> x == 1, index_c)
-    n_gc   = basicdata.n_ground_wire#count(x -> x == 2, index_c)
-    #n_ph2  = count(x -> x == 3, index_c)
-
+    n_gc   = basicdata.n_ground_wire
+    
     Zph_ph = z_primitive[ 1          : n_cond       , 1          : n_cond ]
     Zph_g  = z_primitive[ 1          : n_cond       , n_cond + 1 : n_cond + n_gc ]
     Zg_ph  = z_primitive[ n_cond + 1 : n_cond + n_gc, 1          : n_cond ]
     Zg_g   = z_primitive[ n_cond + 1 : n_cond + n_gc, n_cond + 1 : n_cond + n_gc ]
 
-    return Zph_ph - ( Zph_g * inv(Zg_g) * Zg_ph )
+    return Zph_ph - ( Zph_g * inv(Zg_g) * Zg_ph )#Zkron( Zph_ph - ( Zph_g * inv(Zg_g) * Zg_ph ) )
+end
+
+
+function get_sequence_z_matrix( 
+    basicdata::TLBasicData,
+    z_kron::Matrix{ComplexF64}
+    )#::Zsequence
+    a      = cos(2*π/3)  + sin(2*π/3)im
+    a2     = cos(-2*π/3) + sin(-2*π/3)im
+
+    T_SEQ  = [ 1  1  1;
+               1 a2  a;
+               1  a  a2 ]
+    #IT_SEQ = (1/3)* [ 1  1  1;
+    #                  1  a  a2;
+    #                  1 a2  a ]
+    if basicdata.n_circuits == 2
+        off_diagonal = zeros(3,3)
+        T_SEQ = [ T_SEQ off_diagonal; off_diagonal T_SEQ ]
+    end
+
+    
+    return inv(T_SEQ) * z_kron * T_SEQ#Zsequence( inv(T_SEQ) * z_kron * T_SEQ)
+
 end
 
 

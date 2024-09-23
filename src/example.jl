@@ -74,7 +74,9 @@ z_prim = get_primitive_z_matrix( tl1_basicdata, tl1_geometry, tl1_conductor, tl1
 
 z_kron = get_kron_reduced_z_matrix( tl1_basicdata, tl1_geometry, z_prim )
 
-#z_m = get_primitive_z_matrix( comb, D_v, res_v, GMR_v, index_c, 100.0, 60.0 )
+z_seq_nt = get_sequence_z_matrix( tl1_basicdata, z_kron )
+
+#TODO get transposed line parameters
 
 
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE
