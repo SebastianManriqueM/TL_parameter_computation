@@ -2,6 +2,10 @@ using Parameters
 using XLSX
 using DataFrames
 
+using LinearAlgebra
+using Combinatorics
+using Statistics
+
 FACTOR_FT_INCH = 1.0 / 12.0
 FACTOR_MILES_KFT = 1.0 / 5.28
 

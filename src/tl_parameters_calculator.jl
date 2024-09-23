@@ -1,6 +1,3 @@
-using LinearAlgebra
-using Combinatorics
-
 include("definitions.jl")
 #include("common_filters.jl")
 
@@ -59,6 +56,42 @@ function get_kron_reduced_z_matrix(
     return Zph_ph - ( Zph_g * inv(Zg_g) * Zg_ph )#Zkron( Zph_ph - ( Zph_g * inv(Zg_g) * Zg_ph ) )
 end
 
+function get_off_diagonal_average( 
+    z_kron_nt::Matrix{ComplexF64}
+    )
+    return ( z_kron_nt[1,2] + z_kron_nt[1,3] + z_kron_nt[2,3] ) / 3
+end
+
+function update_off_diagonal_fully_transposed(  
+    z_kron_nt::Matrix{ComplexF64},
+    average_off_diagonal::ComplexF64
+    )
+    z_kron_ft = z_kron_nt
+    for i in collect( combinations( collect(1:3), 2 ) )
+        z_kron_ft[ i[1] , i[2] ] = average_off_diagonal
+        z_kron_ft[ i[2] , i[1] ] = average_off_diagonal
+    end
+    return z_kron_ft
+end
+
+function get_fully_transposed_z( 
+    basicdata::TLBasicData, 
+    z_kron_nt::Matrix{ComplexF64} 
+    )
+    dim       = size(z_kron_nt)[1]
+    z_kron_ft = zeros(Complex{Float64}, dim, dim)
+    average_off_diagonal = get_off_diagonal_average( z_kron_nt[1:3 , 1:3] )
+    z_kron_ft[1:3 , 1:3] = update_off_diagonal_fully_transposed( z_kron_nt[1:3 , 1:3] , average_off_diagonal)
+
+    if basicdata.n_circuits == 2
+        average_off_diagonal = get_off_diagonal_average( z_kron_nt[4:6 , 4:6] )
+        z_kron_ft[4:6 , 4:6] = update_off_diagonal_fully_transposed( z_kron_nt[4:6 , 4:6] , average_off_diagonal)
+        average_couplings    = mean( z_kron_nt[1:3 , 4:6] )
+        z_kron_ft[1:3 , 4:6] = fill(average_couplings, 3, 3)
+        z_kron_ft[4:6 , 1:3] =z_kron_ft[1:3 , 4:6]
+    end
+    return z_kron_ft
+end
 
 function get_sequence_z_matrix( 
     basicdata::TLBasicData,
