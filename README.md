@@ -19,3 +19,7 @@ This repository basic julia scripts for calculating transmission line parameters
 ## To Do Handle with Units
 - [ ] PU calculations. Include Base power, etc.
 - [ ] Include Capability for handle different units. For now miles, Ohm/kft, inch, 
+
+## To Do general functionalities
+- [ ] Add user defined geometry capability
+- [ ] Add Docstrings for documentation
