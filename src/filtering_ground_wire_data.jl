@@ -82,7 +82,7 @@ end
 
 
 
-function get_ground_wire_data( 
+function get_ground_wire( 
     df::DataFrame,
     basicdata::TLBasicData,
     rowindex::Int = 1 
