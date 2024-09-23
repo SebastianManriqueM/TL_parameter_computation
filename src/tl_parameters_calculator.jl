@@ -17,6 +17,7 @@ function get_primitive_z_matrix(
     n_cond      = geometry.n_cables
     z_primitive = zeros( ComplexF64, n_cond, n_cond)
 
+    #TODO Handling with different units
     L_INDTERM = L_INDTERM_OHM_MILE
     L_CONST   = L_CONST_OHM_MILE
     R_CONST   = R_CONST_OHM_MILE
