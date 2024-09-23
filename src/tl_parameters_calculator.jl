@@ -3,6 +3,9 @@ include("definitions.jl")
 
 
 
+#|------------------------------------------------|
+#|------------GET TL PARAMETERS STRUCT------------|
+#|________________________________________________|
 
 function get_primitive_z_matrix( 
     basicdata::TLBasicData,
@@ -75,7 +78,6 @@ function get_diagonal_average(
 end
 
 function update_off_diagonal_fully_transposed(  
-    z_kron_nt::Matrix{ComplexF64},
     average_diagonal::ComplexF64,
     average_off_diagonal::ComplexF64
     )
@@ -98,15 +100,16 @@ function get_fully_transposed_z(
     z_kron_ft            = zeros(Complex{Float64}, dim, dim)
     average_off_diagonal = get_off_diagonal_average( z_kron_nt[1:3 , 1:3] )
     average_diagonal     = get_diagonal_average( z_kron_nt[1:3 , 1:3] )
-    z_kron_ft[1:3 , 1:3] = update_off_diagonal_fully_transposed( z_kron_nt[1:3 , 1:3] , average_diagonal, average_off_diagonal)
+    z_kron_ft[1:3 , 1:3] = update_off_diagonal_fully_transposed( average_diagonal, average_off_diagonal)
 
     if basicdata.n_circuits == 2
         average_off_diagonal = get_off_diagonal_average( z_kron_nt[4:6 , 4:6] )
         average_diagonal     = get_diagonal_average( z_kron_nt[4:6 , 4:6] )
-        z_kron_ft[4:6 , 4:6] = update_off_diagonal_fully_transposed( z_kron_nt[4:6 , 4:6] , average_diagonal, average_off_diagonal)
+        z_kron_ft[4:6 , 4:6] = update_off_diagonal_fully_transposed( average_diagonal, average_off_diagonal)
+        
         average_couplings    = mean( z_kron_nt[1:3 , 4:6] )
         z_kron_ft[1:3 , 4:6] = fill(average_couplings, 3, 3)
-        z_kron_ft[4:6 , 1:3] =z_kron_ft[1:3 , 4:6]
+        z_kron_ft[4:6 , 1:3] = z_kron_ft[1:3 , 4:6]
     end
     return z_kron_ft
 end
@@ -135,7 +138,7 @@ function get_sequence_z_matrix(
 end
 
 
-function initialization_tl_parameters(
+function get_tl_parameters(
     basicdata::TLBasicData,
     geometry::TLGeometry,
     conductor::TLConductor,
@@ -144,14 +147,23 @@ function initialization_tl_parameters(
     dim_primitive = ( 3 * basicdata.n_circuits ) + basicdata.n_ground_wire
     dim_kron      = dim_primitive - basicdata.n_ground_wire
 
-    Zabcg = get_primitive_z_matrix( basicdata, geometry, conductor, ground_wire)
+    Zabcg     = get_primitive_z_matrix( basicdata, geometry, conductor, ground_wire)
+    Z_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Zabcg )
+    Z012_nt   = get_sequence_z_matrix( basicdata, Z_kron_nt )
 
-    Z_kron
-    Z012
-    Zabcg_pu
-    Z_kron_pu
-    Z012_pu
+    Z_kron_ft = get_fully_transposed_z( basicdata, Z_kron_nt )
+    Z012_ft  = get_sequence_z_matrix( basicdata, Z_kron_ft )
 
+    r1 = real( Z012_ft[2,2] )                       #Positive/negative sequence resistance
+    x1 = imag( Z012_ft[2,2] )
+    b1 = 0
+    r0 = real( Z012_ft[1,1] )                       #Zero sequence resistance
+    x0 = imag( Z012_ft[1,1] )
+    b0 = 0
+
+    r0m = real( Z012_ft[4,1] )                       #Zero sequence resistance
+    x0m = imag( Z012_ft[4,1] )
+    b0m = 0
     
-    return ElectricalParameters( combinations, distances, Zabcg, Z_kron, Z012, Zabcg_pu, Z_kron_pu, Z012_pu )
+    return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
 end

@@ -181,26 +181,25 @@ mutable struct TLGroundWire
     XCinternal::Float64
 end
 
-abstract type ImpedanceMatrix end
 
-mutable struct Zprimitive <:ImpedanceMatrix
-     Zabcg::Matrix{Float64} 
-end
-
-mutable struct Zkron <:ImpedanceMatrix
-    Z_kron::Matrix{Float64} 
-end
-
-mutable struct Zsequence <:ImpedanceMatrix
-    Z012::Matrix{Float64}           #Sequence Matrix
-end
 mutable struct ElectricalParameters
-    Zabcg::Matrix{Float64}                #Primitive Matrix
-    Z_kron::Matrix{Float64}                    #Kron reduced matrix
-    Z012::Matrix{Float64}                       #Sequence Matrix
-    Zabcg_pu::Matrix{Float64}       #Primitive Matrix
-    Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
-    Z012_pu::Matrix{Float64}        #Sequence Matrix
+    Zabcg::Matrix{ComplexF64}       #Primitive Matrix
+    Z_kron_nt::Matrix{ComplexF64}   #Kron reduced matrix - non transposed
+    Z012_nt::Matrix{ComplexF64}     #Sequence Matrix - non transposed
+    Z_kron_ft::Matrix{ComplexF64}   #Kron reduced matrix - fully transposed
+    Z012_ft::Matrix{ComplexF64}     #Sequence Matrix - fully transposed
+    r1::Float64                     #Positive/negative sequence resistance
+    x1::Float64
+    b1::Float64
+    r0::Float64                     #Zero sequence resistance
+    x0::Float64
+    b0::Float64
+    r0m::Float64                     #Zero sequence mutual resistance (Between circuits)
+    x0m::Float64
+    b0m::Float64
+    #Zabcg_pu::Matrix{Float64}       #Primitive Matrix
+    #Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
+    #Z012_pu::Matrix{Float64}        #Sequence Matrix
 end
 
 abstract type TransmissionLine end
