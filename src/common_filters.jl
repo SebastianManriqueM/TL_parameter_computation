@@ -125,5 +125,5 @@ function get_XL_from_gmr(
     gmr::Float64,
     frequency::Float64 
     )
-    return frequency * 0.00202237 * log(1/gmr) * FACTOR_MILES_KFT
+    return frequency * L_CONST_OHM_MILE * log(1/gmr) * FACTOR_MILES_KFT #Ohm/kft
 end
