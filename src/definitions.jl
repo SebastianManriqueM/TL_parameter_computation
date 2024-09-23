@@ -158,8 +158,8 @@ mutable struct TLConductor
     XLinternal::Float64
     XCinternal::Float64
     ampacity::Float64
-    #weight::Float64 #-Could be interesting to add constraints
-    #strenght::Float64 #-Could be interesting to add constraints
+    #weight::Float64 #-Could be interesting to add constraints TODO
+    #strenght::Float64 #-Could be interesting to add constraints TODO
 end
 
 mutable struct TLGroundWire
@@ -173,10 +173,23 @@ mutable struct TLGroundWire
     XCinternal::Float64
 end
 
-mutable struct ElectricalParameters
-    Zabcg::Matrix{Float64}          #Primitive Matrix
-    Z_kron::Matrix{Float64}         #Kron reduced matrix
+abstract type ImpedanceMatrix end
+
+mutable struct Zprimitive <:ImpedanceMatrix
+     Zabcg::Matrix{Float64} 
+end
+
+mutable struct Zkron <:ImpedanceMatrix
+    Z_kron::Matrix{Float64} 
+end
+
+mutable struct Zsequence <:ImpedanceMatrix
     Z012::Matrix{Float64}           #Sequence Matrix
+end
+mutable struct ElectricalParameters
+    Zabcg::Matrix{Float64}                #Primitive Matrix
+    Z_kron::Matrix{Float64}                    #Kron reduced matrix
+    Z012::Matrix{Float64}                       #Sequence Matrix
     Zabcg_pu::Matrix{Float64}       #Primitive Matrix
     Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
     Z012_pu::Matrix{Float64}        #Sequence Matrix
