@@ -275,7 +275,11 @@ end
 
 
 
-function get_tl_geometry( df::DataFrame, basicdata::TLBasicData, rowindex::Int = 1 )::TLGeometry
+function get_tl_geometry( 
+    df::DataFrame, 
+    basicdata::TLBasicData, 
+    rowindex::Int = 1 
+    )::TLGeometry
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
 
     n_cables = ( basicdata.n_circuits * 3 ) + basicdata.n_ground_wire
