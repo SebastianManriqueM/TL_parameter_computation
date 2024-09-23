@@ -86,7 +86,7 @@ z_seq_ft  = get_sequence_z_matrix( tl1_basicdata, z_kron_ft )
 println("z_seq_ft\n:",z_seq_ft)
 
 
-#TODO get transposed line parameters
+
 
 
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE

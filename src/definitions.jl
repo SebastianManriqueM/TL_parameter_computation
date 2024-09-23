@@ -6,8 +6,12 @@ using LinearAlgebra
 using Combinatorics
 using Statistics
 
-FACTOR_FT_INCH = 1.0 / 12.0
-FACTOR_MILES_KFT = 1.0 / 5.28
+FACTOR_FT_INCH       = 1.0 / 12.0
+FACTOR_MILES_KFT     = 1.0 / 5.28
+
+R_CONST_OHM_MILE     = 0.00158836
+L_CONST_OHM_MILE     = 0.00202237
+L_INDTERM_OHM_MILE   = 7.6786
 
 DATA_SET_TL_VOLTAGES = [345 500 735]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
