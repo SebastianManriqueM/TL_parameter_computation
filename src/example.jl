@@ -71,19 +71,19 @@ tl1_ground_wire = get_ground_wire_data(filt_ground_w2_df, tl1_basicdata)
 ##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 
 z_prim = get_primitive_z_matrix( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire)
-println("Primitive\n:",z_prim)
+#println("Primitive\n:",z_prim)
 
 z_kron_nt = get_kron_reduced_z_matrix( tl1_basicdata, tl1_geometry, z_prim )
-println("z_kron_nt\n:",z_kron_nt)
+#println("z_kron_nt\n:",z_kron_nt)
 
 z_seq_nt  = get_sequence_z_matrix( tl1_basicdata, z_kron_nt )
-println("z_seq_nt\n:",z_seq_nt)
+#println("z_seq_nt\n:",z_seq_nt)
 
 z_kron_ft = get_fully_transposed_z( tl1_basicdata, z_kron_nt )
-println("z_kron_ft\n:",z_kron_ft)
+#println("z_kron_ft\n:",z_kron_ft)
 
 z_seq_ft  = get_sequence_z_matrix( tl1_basicdata, z_kron_ft )
-println("z_seq_ft\n:",z_seq_ft)
+#println("z_seq_ft\n:",z_seq_ft)
 
 
 
