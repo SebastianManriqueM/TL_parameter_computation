@@ -52,7 +52,7 @@ filt_conductor_df = get_tl_conductor( df_conductors, conductor1_filter )
 #CONDUCTOR - FILTER BY TYPE AND SIZE IN KCMIL
 conductor2_filter  = get_struct_conductor_filters( ["Acsr"], [954.0] )
 filt_conductor2_df = get_tl_conductor( df_conductors, conductor2_filter )
-
+println(filt_conductor2_df)
 
 tl1_conductor = get_conductor( filt_conductor2_df, tl1_basicdata, 2)
 
