@@ -37,10 +37,11 @@ def eliminate_spaces_of_names( original_string, substring ):
 
     return modified_string
 
-index_file = 5
-file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data", "ACAR_electrical_data_CME", "ACCC_electrical_data_ctc", "GW_Alumoweld_data_afl", "GW-aluminum-clad steel"]
-first_substring = [ "Turkey" , "Peachbell", "Pelican", "OCEANSIDE", "19 No. 8", "37/5" ]
-last_substring  = ["*STOCKED", "*STOCKED", "Kingfisher*", "SR Bluebird", "8\nNUMBER &", "All weights"]
+index_file = 6
+file_name   = ["ACSR_Electrical_Data" , "AAC_Electrical_Data"   , "ACAR_electrical_data_CME", "ACCC_electrical_data_ctc", 
+               "GW_Alumoweld_data_afl", "GW-aluminum-clad steel", "ACSS_Electrical_Data_CME" ]
+first_substring = [ "Turkey" , "Peachbell", "Pelican"    , "OCEANSIDE"  , "19 No. 8"   , "37/5"       , "Partridge/ACSS" ]
+last_substring  = ["*STOCKED", "*STOCKED" , "Kingfisher*", "SR Bluebird", "8\nNUMBER &", "All weights", "1. Code words"]
 
 folder_name = "cable_data"
 pdf_path    = folder_name + "/" + file_name[index_file] + ".pdf"
@@ -55,13 +56,16 @@ pdf = PyPDF2.PdfReader(file)
 for page_num in range(len(pdf.pages)):
     page = pdf.pages[page_num]
     text = page.extract_text()
-    print(text)
+    if index_file == 6 and page_num == 1:
+        break
+print(text)
 
 text = remove_text_before_substring(text, first_substring[index_file])
+print("\nAFTER REMOVE_TEXT_BEFORE()\n\n",text)
 if index_file == 2:
     text = remove_text_before_substring(text, first_substring[index_file])
 text = remove_text_after_substring( text, last_substring[index_file])
-
+print("\nAFTER REMOVE_TEXT_AFTER()\n\n",text)
 if index_file == 3:
     names_to_fix = ["CORPUS CHRISTI", "FORT WORTH", "EL PASO", "SAN ANTONIO"]
     for name in names_to_fix:
