@@ -78,7 +78,48 @@ end
 #|-------------GET TL CONDUCTOR STRUCT------------|
 #|________________________________________________|
 
-function get_conductor_data( 
+function get_regpoly_xy_coord( 
+    n_bundling::Int,
+    bundlingspacing::Float64
+    )
+
+    x_coords = zeros(Float64, 1, n_bundling)
+    y_coords = zeros(Float64, 1, n_bundling)
+
+    radius = bundlingspacing / ( 2 * sin( π/n_bundling ) )
+    angle_increment = 2 * π / n_bundling
+
+    for i in 0:( n_bundling - 1 )
+        angle         = i * angle_increment
+        x_coords[i+1] = radius * cos(angle)
+        y_coords[i+1] = radius * sin(angle)
+    end
+
+    return x_coords, y_coords, radius
+end
+
+function get_gmr_bundling_xy( 
+    X1::Matrix{Float64}, 
+    Y1::Matrix{Float64},
+    r::Float64, 
+    gmr_cable::Float64 = r * 1/exp(1/4) #K_gmr = 1/exp(1/4)    # This is for solid/compact conductors. For Stranded see IEC 60287-1-3
+    )
+    
+    GMR_bundle = 1
+    n     = length( X1 )
+    for i = 1 : n
+        for j = 1 : n
+            if i == j 
+                GMR_bundle = GMR_bundle * gmr_cable
+                continue
+            end
+            GMR_bundle = GMR_bundle * get_distance_xy( [ X1[i] X1[j] ], [ Y1[i] Y1[j] ] )#get_distance_p1p2( [ X1[i] Y1[i] ], [ X1[j] Y1[j] ] )
+        end
+    end
+    return GMR_bundle^( 1 / (n * n) )
+end
+
+function get_conductor( 
     df::DataFrame, 
     basicdata::TLBasicData, 
     bundling::Int = 0, 
@@ -121,7 +162,14 @@ function get_conductor_data(
     gmr             = get_gmr_from_XL(XLintrenal, basicdata.frequency)
     XCinternal      = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
     ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
+
+    #   BUNDLING TREATMENT
+    bundling_xcoord, bundling_ycoord, radius = get_regpoly_xy_coord( bundling , bundlingspacing * FACTOR_FT_INCH )
+    gmr_bundling = get_gmr_bundling_xy( bundling_xcoord, bundling_ycoord, radius, gmr )
+    XL_bundling = L_CONST_OHM_MILE * basicdata.frequency * log( 1/gmr_bundling ) * FACTOR_MILES_KFT #ohm/kft
+    XC_bundling = 0.0 #ohm/kft
+    ampacity_bundling = bundling * ampacity   #Amperes
     
-    return TLConductor( type, codeword, bundling, bundlingspacing, stranding, kcmil, diameter, gmr, Rac_tnom, XLintrenal, XCinternal, ampacity )
+    return TLConductor( type, codeword, stranding, kcmil, diameter, gmr, Rac_tnom, XLintrenal, XCinternal, ampacity, bundling, bundlingspacing, bundling_xcoord, bundling_ycoord, gmr_bundling, XL_bundling, XC_bundling, ampacity_bundling )
 end
 

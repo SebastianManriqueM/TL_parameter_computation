@@ -11,7 +11,7 @@ This repository basic julia scripts for calculating transmission line parameters
 ## To Do Conductors filters
 - [ ] Get typical conductor based on transmission line dataset
 - [ ] Get conductor based on type and nearest kcmil in case it doesn't find the exact kcmil provided by the user.
-- [ ] Include Bundling calculations
+
 
 ## To Do TL Power Capacity - conductor
 - [ ] Based on Line Voltage, distance, and conductor, estimate S_rated.
@@ -22,6 +22,7 @@ This repository basic julia scripts for calculating transmission line parameters
 - [ ] Include Capability for handle different units. For now miles, Ohm/kft, inch, 
 
 ## To Do general functionalities
+- [ ] Add calculatios for TL capacitance
 - [ ] Add GET CONDUCTOR/GROUND WIRE TYPICAL based on dataset
 - [ ] Add user defined geometry capability
 - [ ] Add Docstrings for documentation

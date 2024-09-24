@@ -54,7 +54,7 @@ conductor2_filter  = get_struct_conductor_filters( ["Acsr"], [954.0] )
 filt_conductor2_df = get_tl_conductor( df_conductors, conductor2_filter )
 
 
-tl1_conductor = get_conductor_data( filt_conductor2_df, tl1_basicdata)
+tl1_conductor = get_conductor( filt_conductor2_df, tl1_basicdata, 2)
 
 
 
@@ -74,6 +74,7 @@ tl1_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl1_conductor, 
 
 
 tl1 = get_line_struct( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire, tl1_parameters )
+
 
 ##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE

@@ -249,12 +249,6 @@ end
 #|-------------GET TL GEOMETRY STRUCT-------------|
 #|________________________________________________|
 
-function get_distance_xy( 
-    x::Union{Matrix{Float64}, Vector{Float64}},
-    y::Union{Matrix{Float64}, Vector{Float64}} 
-    )
-    return sqrt( ( x[1] - x[2] )^2 + ( y[1] - y[2] )^2 )
-end
 
 function get_all_distances(
     n_cables::Int,

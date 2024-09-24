@@ -11,7 +11,7 @@ FACTOR_MILES_KFT     = 1.0 / 5.28
 
 R_CONST_OHM_MILE     = 0.00158836
 L_CONST_OHM_MILE     = 0.00202237
-L_INDTERM_OHM_MILE   = 7.6786
+L_FACTOR_OHM_MILE    = 7.6786
 
 DATA_SET_TL_VOLTAGES = [345 500 735]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
@@ -139,35 +139,41 @@ mutable struct TLBasicData
     state::String
     structure_type::String
     structure_code::String
-    distance::Float64
-    S_rated::Float64
-    frequency::Float64
-    gnd_rho::Float64
+    distance::Float64       #Miles
+    S_rated::Float64        #MVA
+    frequency::Float64      #Hz
+    gnd_rho::Float64        #ohm/m
 end
 
 mutable struct TLGeometry
     n_cables::Int
-    x_coordinates::Matrix{Float64}
-    y_coordinates::Matrix{Float64}
+    x_coordinates::Matrix{Float64}  #ft
+    y_coordinates::Matrix{Float64}  #ft
     combinations::Vector{Vector{Int64}}
-    distances::Matrix{Float64}
+    distances::Matrix{Float64}      #ft
 end
 
 mutable struct TLConductor
     type::String
     codeword::String
-    bundling::Int
-    bundlingspacing::Float64
     stranding::String
     kcmil::Float64
-    diameter::Float64
-    gmr::Float64
-    Rac_tnom::Float64
-    XLinternal::Float64
-    XCinternal::Float64
-    ampacity::Float64
+    diameter::Float64   #inches
+    gmr::Float64        #ft
+    Rac_tnom::Float64   #ohm/kft
+    XLinternal::Float64 #ohm/kft
+    XCinternal::Float64 #ohm/kft
+    ampacity::Float64   #Amperes
     #weight::Float64 #-Could be interesting to add constraints TODO
     #strenght::Float64 #-Could be interesting to add constraints TODO
+    bundling::Int
+    bundlingspacing::Float64
+    bundling_xcoordinates::Matrix{Float64}
+    bundling_ycoordinates::Matrix{Float64}
+    gmr_bundling::Float64        #ft
+    XL_bundling::Float64 #ohm/kft
+    XC_bundling::Float64 #ohm/kft
+    ampacity_bundling::Float64   #Amperes
 end
 
 mutable struct TLGroundWire
