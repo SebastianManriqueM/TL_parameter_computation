@@ -8,6 +8,7 @@ using Statistics
 
 FACTOR_FT_INCH       = 1.0 / 12.0
 FACTOR_MILES_KFT     = 1.0 / 5.28
+FACTOR_KFT_FT        = 1 / 1000
 
 R_CONST_OHM_MILE     = 0.00158836
 L_CONST_OHM_MILE     = 0.00202237

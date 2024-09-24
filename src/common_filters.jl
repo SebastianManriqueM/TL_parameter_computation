@@ -118,7 +118,7 @@ function get_gmr_from_XL(
     XL::Float64, 
     frequency::Float64
     )
-    return 1/ℯ^( XL / (2*π*frequency) )
+    return 1/ℯ^( (XL / FACTOR_MILES_KFT) / (L_CONST_OHM_MILE*frequency) )
 end
 
 function get_XL_from_gmr(
