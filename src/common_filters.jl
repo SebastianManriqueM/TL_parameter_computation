@@ -127,3 +127,10 @@ function get_XL_from_gmr(
     )
     return frequency * L_CONST_OHM_MILE * log(1/gmr) * FACTOR_MILES_KFT #Ohm/kft
 end
+
+function get_distance_xy( 
+    x::Union{Matrix{Float64}, Vector{Float64}},
+    y::Union{Matrix{Float64}, Vector{Float64}} 
+    )
+    return sqrt( ( x[1] - x[2] )^2 + ( y[1] - y[2] )^2 )
+end
