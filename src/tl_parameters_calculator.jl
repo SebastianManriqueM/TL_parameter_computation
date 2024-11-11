@@ -54,6 +54,48 @@ function get_primitive_z_matrix(
     return z_primitive#Zprimitive(z_primitive)
 end
 
+function get_primitive_potential_matrix( 
+    basicdata::TLBasicData,
+    geometry::TLGeometry,
+    conductor::TLConductor,
+    ground_wire::TLGroundWire, 
+    )#::Pprimitive
+    gmr_bund  = conductor.gmr_bundling
+    gmr_gw    = ground_wire.gmr
+    
+    n_cond      = geometry.n_cables
+    p_primitive = zeros( ComplexF64, n_cond, n_cond)
+
+    #TODO Handling with different units
+
+    #out diagonal
+    j = 1
+    for i in geometry.combinations
+        #get_distance_xy( x_coordinates[idx_v] , y_coordinates[idx_v] )
+        #get_distance_xy( [ geometry.x_coordinates[ i[1] ] , geometry.x_coordinates[ i[2] ] ] , [ geometry.y_coordinates[ i[1] ] , -geometry.y_coordinates[ i[2] ] ] )
+        Sij = get_distance_xy( [ geometry.x_coordinates[ i[1] ] , geometry.x_coordinates[ i[2] ] ] , [ geometry.y_coordinates[ i[1] ] , -geometry.y_coordinates[ i[2] ] ] )
+
+        p_primitive[i[1] , i[2]] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sij / geometry.distances[j] ) )
+        p_primitive[i[2] , i[1]] = p_primitive[i[1] , i[2]]
+        j = j + 1
+    end
+    
+    #diagonal - Conductors
+    for i = 1:n_cond
+        #TODO Add capability to represent 2 different conductors in different circuits - change Rac_tnom and gmr at elseif
+        Sii = get_distance_xy( [ geometry.x_coordinates[ i ] , geometry.x_coordinates[ i ] ] , [ geometry.y_coordinates[ i ] , -geometry.y_coordinates[ i ] ] )
+
+        if i <= 3  #Circuit 1
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_bund ) )
+        elseif  basicdata.n_circuits == 2 && i <= basicdata.n_circuits * 3  #Circuit 2
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_bund ) )
+        else #Ground wire
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_gw ) )
+        end
+
+    end
+    return p_primitive#Zprimitive(z_primitive)
+end
 
 function get_kron_reduced_z_matrix(
     basicdata::TLBasicData, 
@@ -158,20 +200,28 @@ function get_tl_parameters(
     Z012_nt   = get_sequence_z_matrix( basicdata, Z_kron_nt )
 
     Z_kron_ft = get_fully_transposed_z( basicdata, Z_kron_nt )
-    Z012_ft  = get_sequence_z_matrix( basicdata, Z_kron_ft )
+    Z012_ft   = get_sequence_z_matrix( basicdata, Z_kron_ft )
+
+    Pabcg     = get_primitive_potential_matrix( basicdata, geometry, conductor, ground_wire )
+    P_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Pabcg )
+    Y_kron_nt = 2 * π * basicdata.frequency * inv(P_kron_nt) * im
+    Y012_nt   = get_sequence_z_matrix( basicdata, Y_kron_nt )
+
+    Y_kron_ft = get_fully_transposed_z( basicdata, Y_kron_nt )
+    Y012_ft   = get_sequence_z_matrix( basicdata, Y_kron_ft )
 
     r1 = real( Z012_ft[2,2] )                       #Positive/negative sequence resistance
     x1 = imag( Z012_ft[2,2] )
-    b1 = 0
+    b1 = imag( Y012_ft[2,2] )
     r0 = real( Z012_ft[1,1] )                       #Zero sequence resistance
     x0 = imag( Z012_ft[1,1] )
-    b0 = 0
+    b0 = imag( Y012_ft[1,1] )
 
     r0m = real( Z012_ft[4,1] )                       #Zero sequence resistance
     x0m = imag( Z012_ft[4,1] )
-    b0m = 0
+    b0m = imag( Y012_ft[4,1] )
     
-    return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
+    return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, Y_kron_nt, Y012_nt, Y_kron_ft, Y012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
 end
 
 function get_line_struct(

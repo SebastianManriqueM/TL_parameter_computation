@@ -14,6 +14,10 @@ R_CONST_OHM_MILE     = 0.00158836
 L_CONST_OHM_MILE     = 0.00202237
 L_FACTOR_OHM_MILE    = 7.6786
 
+ϵ_REL_AIR_F_m        = 1
+ϵ_0_F_METER          = 8.85e-12
+ϵ_AIR_μF_MILE        = 1.4240e-2
+
 DATA_SET_TL_VOLTAGES = [345 500 735]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
 US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
@@ -190,20 +194,24 @@ end
 
 
 mutable struct ElectricalParameters
-    Zabcg::Matrix{ComplexF64}       #Primitive Matrix
-    Z_kron_nt::Matrix{ComplexF64}   #Kron reduced matrix - non transposed
-    Z012_nt::Matrix{ComplexF64}     #Sequence Matrix - non transposed
-    Z_kron_ft::Matrix{ComplexF64}   #Kron reduced matrix - fully transposed
-    Z012_ft::Matrix{ComplexF64}     #Sequence Matrix - fully transposed
-    r1::Float64                     #Positive/negative sequence resistance
-    x1::Float64
-    b1::Float64
-    r0::Float64                     #Zero sequence resistance
-    x0::Float64
-    b0::Float64
-    r0m::Float64                     #Zero sequence mutual resistance (Between circuits)
-    x0m::Float64
-    b0m::Float64
+    Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix
+    Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed
+    Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed
+    Z_kron_ft::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - fully transposed
+    Z012_ft::Matrix{ComplexF64}     #Series impedance Sequence Matrix - fully transposed
+    Y_kron_nt::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - non transposed
+    Y012_nt::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - non transposed
+    Y_kron_ft::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - fully transposed
+    Y012_ft::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - fully transposed
+    r1::Float64                     #Positive/negative sequence series resistance
+    x1::Float64                     #Positive/negative sequence series reactance
+    b1::Float64                     #Positive/negative sequence shunt suceptance
+    r0::Float64                     #Zero sequence series resistance
+    x0::Float64                     #Zero sequence series reactance
+    b0::Float64                     #Zero sequence shunt suceptance
+    r0m::Float64                    #Zero sequence mutual resistance (Between circuits)
+    x0m::Float64                    #Zero sequence mutual reactance (Between circuits)
+    b0m::Float64                    #Zero sequence mutual suceptance (Between circuits)
     #Zabcg_pu::Matrix{Float64}       #Primitive Matrix
     #Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
     #Z012_pu::Matrix{Float64}        #Sequence Matrix
