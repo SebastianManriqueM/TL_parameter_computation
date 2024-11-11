@@ -121,7 +121,7 @@ end
 
 function get_conductor( 
     df::DataFrame, 
-    basicdata::TLBasicData, 
+    basicdata::TLBasicData; 
     bundling::Int = 0, 
     bundlingspacing::Float64 = 18.0, 
     rowindex::Int = 1 

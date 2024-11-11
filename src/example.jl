@@ -23,10 +23,17 @@ df_tl_examples     = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_dataset) 
 
 
 #Set TL filtering options
-tl1_filter        = get_user_filter_tl_geometry( 345.0, 2, 2, ["Iowa"], ["Lattice"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+tl1_filter = get_user_filter_tl_geometry(
+                        345.0; #voltage
+                        n_circuits=2,
+                        n_ground_wires=2,
+                        v_str_states=["Iowa"],
+                        v_str_structure_types=["Lattice"]
+                        )
+
 
 println("FILTER ONLY ONE STATE: $(tl1_filter.state)")
-filt_tl_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
+filt_tl_df = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
 println(filt_tl_df[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_tl_df))
@@ -54,7 +61,12 @@ conductor2_filter  = get_struct_conductor_filters( ["Acsr"], [954.0] )
 filt_conductor2_df = get_tl_conductor( df_conductors, conductor2_filter )
 println(filt_conductor2_df)
 
-tl1_conductor = get_conductor( filt_conductor2_df, tl1_basicdata, 2)
+tl1_conductor = get_conductor( 
+                filt_conductor2_df, 
+                tl1_basicdata, 
+                bundling = 2,
+                rowindex = 2
+                )
 
 
 
@@ -65,10 +77,11 @@ filt_ground_w1_df = get_tl_ground_wire( df_ground_wires, ground_w1_filter )
 ground_w2_filter = get_struct_ground_wire_filters( ["Alumoweld"], [49.53] )
 filt_ground_w2_df = get_tl_ground_wire( df_ground_wires, ground_w2_filter )
 
-tl1_ground_wire = get_ground_wire(filt_ground_w2_df, tl1_basicdata)
-
-
-
+tl1_ground_wire = get_ground_wire(
+                    filt_ground_w2_df, 
+                    tl1_basicdata,
+                    rowindex = 1
+                    )
 
 tl1_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire )
 

@@ -5,8 +5,8 @@ include("common_filters.jl")
 #|----------GET STRUCT FILTERS FUNCTIONS----------|
 #|________________________________________________|
 function get_user_filter_tl_geometry( 
-    voltage::Float64, 
-    n_circuits::Int, 
+    voltage::Float64; 
+    n_circuits::Int=1, 
     n_ground_wires::Int=2, 
     v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
     v_str_structure_types::Union{Vector{String}, Matrix{String}}=[""]
@@ -170,7 +170,10 @@ filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
 println(filt_df[:,1:7])
 """
-function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
+function get_tl_df_all_filters( 
+    df::DataFrame, 
+    user_filter::TLFilters 
+    )
     # Voltage level
     filt_df  =  get_voltage_filtered_tl_df( df, user_filter )
 
@@ -186,7 +189,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
 
     filt_df2   = filter(row -> row[:n_circuits] == user_filter.n_circuits, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there is no data that match all the selected criteria. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
+        @warn( "Currently, there is no data that match all the selected criteria. It was applied just voltage level filter of $(user_filter.voltage_kv) kV." )
         return filt_df
     end
     filt_df = filt_df2
@@ -198,7 +201,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
 
     filt_df2   = filter(row -> row[:n_ground_w] == user_filter.n_ground_wire, filt_df)
     if nrow(filt_df2) < 1
-        @warn( "Currently there is no data that match all the selected criteria. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
+        @warn( "Currently, there is no data that match all the selected criteria. It were applied just voltage level filter of $(user_filter.voltage_kv) kV, and the number of circuits filter of $(user_filter.n_circuits)." )
         return filt_df
     end
     filt_df = filt_df2
@@ -207,7 +210,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     if !( user_filter.state[1] == "" )
         filt_df2 = get_df_single_str_filter( filt_df, user_filter, "state" )
         if nrow( filt_df2 ) < 1
-            @warn( "Currently there is no data that match all the selected criteria. The state filter was ignored." )
+            @warn( "Currently, there is no data that match all the selected criteria. The state filter was ignored." )
         else
             filt_df = filt_df2
         end
@@ -217,7 +220,7 @@ function get_tl_df_all_filters( df::DataFrame, user_filter::TLFilters )
     if !( user_filter.structure_type[1] == "" )
         filt_df2 = get_df_single_str_filter( filt_df, user_filter, "structure_type" )
         if nrow(filt_df2) < 1
-            @warn( "Currently there is no data that match all the selected criteria. The structure type filter was ignored." )
+            @warn( "Currently, there is no data that match all the selected criteria. The structure type filter was ignored." )
             return filt_df
         end
         filt_df = filt_df2
