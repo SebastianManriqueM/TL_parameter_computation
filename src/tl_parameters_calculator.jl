@@ -203,7 +203,9 @@ function get_tl_parameters(
     Z012_ft   = get_sequence_z_matrix( basicdata, Z_kron_ft )
 
     Pabcg     = get_primitive_potential_matrix( basicdata, geometry, conductor, ground_wire )
+    @show Pabcg
     P_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Pabcg )
+    @show P_kron_nt
     Y_kron_nt = 2 * π * basicdata.frequency * inv(P_kron_nt) * im
     Y012_nt   = get_sequence_z_matrix( basicdata, Y_kron_nt )
 
@@ -217,9 +219,15 @@ function get_tl_parameters(
     x0 = imag( Z012_ft[1,1] )
     b0 = imag( Y012_ft[1,1] )
 
-    r0m = real( Z012_ft[4,1] )                       #Zero sequence resistance
-    x0m = imag( Z012_ft[4,1] )
-    b0m = imag( Y012_ft[4,1] )
+    if basicdata.n_circuits > 1
+        r0m = real( Z012_ft[4,1] )                       #Zero sequence resistance
+        x0m = imag( Z012_ft[4,1] )
+        b0m = imag( Y012_ft[4,1] )
+    else
+        r0m = 0                       #Zero sequence resistance
+        x0m = 0
+        b0m = 0
+    end
     
     return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, Y_kron_nt, Y012_nt, Y_kron_ft, Y012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
 end
