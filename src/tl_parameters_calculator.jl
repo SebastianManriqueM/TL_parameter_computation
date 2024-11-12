@@ -203,9 +203,7 @@ function get_tl_parameters(
     Z012_ft   = get_sequence_z_matrix( basicdata, Z_kron_ft )
 
     Pabcg     = get_primitive_potential_matrix( basicdata, geometry, conductor, ground_wire )
-    @show Pabcg
     P_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Pabcg )
-    @show P_kron_nt
     Y_kron_nt = 2 * π * basicdata.frequency * inv(P_kron_nt) * im
     Y012_nt   = get_sequence_z_matrix( basicdata, Y_kron_nt )
 
