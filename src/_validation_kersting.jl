@@ -38,7 +38,7 @@ filt_tl_df = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 println(filt_tl_df[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_tl_df))
 
-tl1_basicdata = get_tl_basicdata( filt_tl_df )
+t1_basicdata = get_tl_basicdata( filt_tl_df )
 tl1_geometry = get_tl_geometry( filt_tl_df, tl1_basicdata )
 
 #CONDUCTOR - FILTER BY TYPE AND NAME (CODEWORD)
@@ -55,7 +55,7 @@ tl1_conductor = get_conductor(
 
 
 #GROUND WIRE - FILTER BY TYPE AND AWG
-ground_w1_filter = get_struct_ground_wire_filters( ["Alumoweld"], ["7/9"] )
+ground_w1_filter = get_struct_ground_wire_filters( ["Alumoweld"], ["37/9"] )
 filt_ground_w1_df = get_tl_ground_wire( df_ground_wires, ground_w1_filter )
 
 
