@@ -62,6 +62,9 @@ function get_primitive_potential_matrix(
     )#::Pprimitive
     gmr_bund  = conductor.gmr_bundling
     gmr_gw    = ground_wire.gmr
+
+    r_ft_gw   = ground_wire.diameter * 0.5 * FACTOR_FT_INCH
+    r_ft_bund = conductor.r_ft_c_bundling
     
     n_cond      = geometry.n_cables
     p_primitive = zeros( ComplexF64, n_cond, n_cond)
@@ -84,13 +87,13 @@ function get_primitive_potential_matrix(
     for i = 1:n_cond
         #TODO Add capability to represent 2 different conductors in different circuits - change Rac_tnom and gmr at elseif
         Sii = get_distance_xy( [ geometry.x_coordinates[ i ] , geometry.x_coordinates[ i ] ] , [ geometry.y_coordinates[ i ] , -geometry.y_coordinates[ i ] ] )
-
+            #TODO GMR SHOULD CONCIDER CAPACITANCE FROM DATASHEET
         if i <= 3  #Circuit 1
-            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_bund ) )
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii ) + log( 1 / r_ft_bund ) )
         elseif  basicdata.n_circuits == 2 && i <= basicdata.n_circuits * 3  #Circuit 2
-            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_bund ) )
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii ) + log( 1 / r_ft_bund ) )
         else #Ground wire
-            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / gmr_gw ) )
+            p_primitive[i , i] = ( 1 / (2*π*ϵ_AIR_μF_MILE) ) * ( log( Sii / r_ft_gw ) )
         end
 
     end
@@ -204,6 +207,8 @@ function get_tl_parameters(
 
     Pabcg     = get_primitive_potential_matrix( basicdata, geometry, conductor, ground_wire )
     P_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Pabcg )
+    @show Pabcg
+    @show P_kron_nt
     Y_kron_nt = 2 * π * basicdata.frequency * inv(P_kron_nt) * im
     Y012_nt   = get_sequence_z_matrix( basicdata, Y_kron_nt )
 
@@ -222,9 +227,9 @@ function get_tl_parameters(
         x0m = imag( Z012_ft[4,1] )
         b0m = imag( Y012_ft[4,1] )
     else
-        r0m = 0                       #Zero sequence resistance
-        x0m = 0
-        b0m = 0
+        r0m = 0.0                       #Zero sequence resistance
+        x0m = 0.0
+        b0m = 0.0
     end
     
     return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, Y_kron_nt, Y012_nt, Y_kron_ft, Y012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )

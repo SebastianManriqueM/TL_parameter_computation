@@ -129,6 +129,14 @@ function get_XL_from_gmr(
     return frequency * L_CONST_OHM_MILE * log(1/gmr) * FACTOR_MILES_KFT #Ohm/kft
 end
 
+#r equivalent for Capacitance calc. RETURNS IN FEET, AND XL SHOULD BE GIVEN IN OHM/KFT AND FREQUENCY IN HZ
+function get_req_from_XC(
+    XC::Float64, 
+    frequency::Float64
+    )
+    return 1/ℯ^( ( XC * frequency * FACTOR_MILES_KFT )/( XC_FACTOR_MOHM_MILE ) )
+end
+
 function get_distance_xy( 
     x::Union{Matrix{Float64}, Vector{Float64}},
     y::Union{Matrix{Float64}, Vector{Float64}} 

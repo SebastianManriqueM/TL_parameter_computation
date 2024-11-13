@@ -22,7 +22,6 @@ This repository basic julia scripts for calculating transmission line parameters
 - [ ] Include Capability for handle different units. For now miles, Ohm/kft, inch, 
 
 ## To Do general functionalities
-- [ ] Add calculatios for TL capacitance
 - [ ] Add GET CONDUCTOR/GROUND WIRE TYPICAL based on dataset
 - [ ] Add user defined geometry capability
 - [ ] Add Docstrings for documentation

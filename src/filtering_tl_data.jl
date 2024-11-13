@@ -234,7 +234,7 @@ end
 #|-------------GET TL BASICDATA STRUCT------------|
 #|________________________________________________|
 function get_tl_basicdata( 
-    df::DataFrame, 
+    df::DataFrame; 
     S_rated::Float64 = 0.0,
     frequency::Float64 = 60.0,
     distance::Float64 = 0.0,
@@ -274,7 +274,7 @@ end
 
 function get_tl_geometry( 
     df::DataFrame, 
-    basicdata::TLBasicData, 
+    basicdata::TLBasicData; 
     rowindex::Int = 1 
     )::TLGeometry
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )

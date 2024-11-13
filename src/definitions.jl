@@ -13,6 +13,8 @@ FACTOR_KFT_FT        = 1 / 1000
 R_CONST_OHM_MILE     = 0.00158836
 L_CONST_OHM_MILE     = 0.00202237
 L_FACTOR_OHM_MILE    = 7.6786
+XC_FACTOR_MOHM_MILE  = 1.779 #Stevenson p.176
+XC_FACTOR_MOHM_KFT   = 9.39312 #Stevenson p.176
 
 ϵ_REL_AIR_F_m        = 1
 ϵ_0_F_METER          = 8.85e-12
@@ -71,8 +73,8 @@ COL_INDEX_CONDUCTOR = Dict(
     "stranding"      => 4,
     "diameter_inch"  => 5,
     "R_20dc_ohm_kft" => 6,
-    "R_25ac_ohm_kft" => 7,
-    "R_50ac_ohm_kft" => 8,
+    "R_25AC_ohm_kft" => 7,
+    "R_50AC_ohm_kft" => 8,
     "R_75AC_ohm_kft" => 9,
     "C_60Hz_Mohm_kft"=> 10,
     "L_60Hz_ohm_kft" => 11,
@@ -167,7 +169,7 @@ mutable struct TLConductor
     gmr::Float64        #ft
     Rac_tnom::Float64   #ohm/kft
     XLinternal::Float64 #ohm/kft
-    XCinternal::Float64 #ohm/kft
+    XCinternal::Float64 #Mohm/kft
     ampacity::Float64   #Amperes
     #weight::Float64 #-Could be interesting to add constraints TODO
     #strenght::Float64 #-Could be interesting to add constraints TODO
@@ -177,7 +179,8 @@ mutable struct TLConductor
     bundling_ycoordinates::Matrix{Float64}
     gmr_bundling::Float64        #ft
     XL_bundling::Float64 #ohm/kft
-    XC_bundling::Float64 #ohm/kft
+    r_ft_c_bundling::Float64 #equivalent radius in feet for C calculations
+    XC_bundling::Float64 #Mohm*kft
     ampacity_bundling::Float64   #Amperes
 end
 
@@ -194,21 +197,21 @@ end
 
 
 mutable struct ElectricalParameters
-    Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix
-    Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed
-    Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed
-    Z_kron_ft::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - fully transposed
-    Z012_ft::Matrix{ComplexF64}     #Series impedance Sequence Matrix - fully transposed
-    Y_kron_nt::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - non transposed
-    Y012_nt::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - non transposed
-    Y_kron_ft::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - fully transposed
-    Y012_ft::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - fully transposed
-    r1::Float64                     #Positive/negative sequence series resistance
-    x1::Float64                     #Positive/negative sequence series reactance
-    b1::Float64                     #Positive/negative sequence shunt suceptance
+    Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix                          ohm/mile
+    Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed      ohm/mile
+    Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed          ohm/mile
+    Z_kron_ft::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - fully transposed    ohm/mile
+    Z012_ft::Matrix{ComplexF64}     #Series impedance Sequence Matrix - fully transposed        ohm/mile
+    Y_kron_nt::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - non transposed      ohm/mile
+    Y012_nt::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - non transposed          ohm/mile
+    Y_kron_ft::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - fully transposed    ohm/mile
+    Y012_ft::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - fully transposed        ohm/mile
+    r1::Float64                     #Positive/negative sequence series resistance               ohm/mile
+    x1::Float64                     #Positive/negative sequence series reactance                ohm/mile
+    b1::Float64                     #Positive/negative sequence shunt suceptance                uS/mile
     r0::Float64                     #Zero sequence series resistance
     x0::Float64                     #Zero sequence series reactance
-    b0::Float64                     #Zero sequence shunt suceptance
+    b0::Float64                     #Zero sequence shunt suceptance                             uS/mile
     r0m::Float64                    #Zero sequence mutual resistance (Between circuits)
     x0m::Float64                    #Zero sequence mutual reactance (Between circuits)
     b0m::Float64                    #Zero sequence mutual suceptance (Between circuits)

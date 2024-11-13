@@ -158,18 +158,27 @@ function get_conductor(
         @error("There is no resistance for the $(df[ rowindex, COL_INDEX_CONDUCTOR["type"] ]) $(df[ rowindex, COL_INDEX_CONDUCTOR["codeword"] ]) conductor.")
     end
     
-    XLintrenal      = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
-    gmr             = get_gmr_from_XL(XLintrenal, basicdata.frequency)
+    XLinternal      = df[ rowindex, COL_INDEX_CONDUCTOR["L_60Hz_ohm_kft"] ]
+    gmr             = get_gmr_from_XL(XLinternal, basicdata.frequency)
     XCinternal      = df[ rowindex, COL_INDEX_CONDUCTOR["C_60Hz_Mohm_kft"] ]
     ampacity        = df[ rowindex, COL_INDEX_CONDUCTOR["ampacity_a"] ]
 
     #   BUNDLING TREATMENT
     bundling_xcoord, bundling_ycoord, radius = get_regpoly_xy_coord( bundling , bundlingspacing * FACTOR_FT_INCH )
+    
     gmr_bundling = get_gmr_bundling_xy( bundling_xcoord, bundling_ycoord, radius, gmr )
-    XL_bundling = L_CONST_OHM_MILE * basicdata.frequency * log( 1/gmr_bundling ) * FACTOR_MILES_KFT #ohm/kft
-    XC_bundling = 0.0 #ohm/kft
+    XL_bundling  = L_CONST_OHM_MILE * basicdata.frequency * log( 1/gmr_bundling ) * FACTOR_MILES_KFT #ohm/kft
+
+    r_ft_c          = get_req_from_XC(XCinternal, basicdata.frequency )#diameter * 0.5 * FACTOR_FT_INCH
+    r_ft_c_bundling = get_gmr_bundling_xy( bundling_xcoord, bundling_ycoord, radius, r_ft_c )
+    @show gmr
+    @show gmr_bundling
+    @show r_ft_c
+    @show r_ft_c_bundling
+    XC_bundling     = ( XC_FACTOR_MOHM_MILE / basicdata.frequency ) * log( 1 / r_ft_c_bundling ) / FACTOR_MILES_KFT #Mohm*kft
+
     ampacity_bundling = bundling * ampacity   #Amperes
     
-    return TLConductor( type, codeword, stranding, kcmil, diameter, gmr, Rac_tnom, XLintrenal, XCinternal, ampacity, bundling, bundlingspacing, bundling_xcoord, bundling_ycoord, gmr_bundling, XL_bundling, XC_bundling, ampacity_bundling )
+    return TLConductor( type, codeword, stranding, kcmil, diameter, gmr, Rac_tnom, XLinternal, XCinternal, ampacity, bundling, bundlingspacing, bundling_xcoord, bundling_ycoord, gmr_bundling, XL_bundling, r_ft_c_bundling, XC_bundling, ampacity_bundling )
 end
 
