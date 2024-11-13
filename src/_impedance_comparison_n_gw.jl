@@ -1,7 +1,7 @@
-include("src/filtering_tl_data.jl")
-include("src/filtering_conductor_data.jl")
-include("src/filtering_ground_wire_data.jl")
-include("src/tl_parameters_calculator.jl")
+include("filtering_tl_data.jl")
+include("filtering_conductor_data.jl")
+include("filtering_ground_wire_data.jl")
+include("tl_parameters_calculator.jl")
 
 using Revise
 
