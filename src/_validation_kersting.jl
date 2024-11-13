@@ -38,7 +38,7 @@ filt_tl_df = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 println(filt_tl_df[:,1:7])
 println("N TRANSMISSION LINES:\n", nrow(filt_tl_df))
 
-t1_basicdata = get_tl_basicdata( filt_tl_df )
+tl1_basicdata = get_tl_basicdata( filt_tl_df )
 tl1_geometry = get_tl_geometry( filt_tl_df, tl1_basicdata )
 
 #CONDUCTOR - FILTER BY TYPE AND NAME (CODEWORD)
@@ -48,7 +48,7 @@ filt_conductor_df = get_tl_conductor( df_conductors, conductor1_filter )
 tl1_conductor = get_conductor( 
                 filt_conductor_df, 
                 tl1_basicdata, 
-                bundling = 0,
+                bundling = 1,
                 rowindex = 1
                 )
 
