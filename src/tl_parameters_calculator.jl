@@ -207,8 +207,7 @@ function get_tl_parameters(
 
     Pabcg     = get_primitive_potential_matrix( basicdata, geometry, conductor, ground_wire )
     P_kron_nt = get_kron_reduced_z_matrix( basicdata, geometry, Pabcg )
-    @show Pabcg
-    @show P_kron_nt
+    
     Y_kron_nt = 2 * π * basicdata.frequency * inv(P_kron_nt) * im
     Y012_nt   = get_sequence_z_matrix( basicdata, Y_kron_nt )
 
@@ -232,7 +231,10 @@ function get_tl_parameters(
         b0m = 0.0
     end
     
-    return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, Y_kron_nt, Y012_nt, Y_kron_ft, Y012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m )
+    Z_sil = ( x1 / (b1/1000000) )^(0.5)         #b1 is in uS/mile TODO - deal with units
+    sil   = ( basicdata.voltage_kv )^2 / Z_sil  #Since V is in kV -> SIL is given in MW
+    
+    return ElectricalParameters( Zabcg, Z_kron_nt, Z012_nt, Z_kron_ft, Z012_ft, Y_kron_nt, Y012_nt, Y_kron_ft, Y012_ft, r1, x1, b1, r0, x0, b0, r0m, x0m, b0m, Z_sil, sil )
 end
 
 function get_line_struct(
