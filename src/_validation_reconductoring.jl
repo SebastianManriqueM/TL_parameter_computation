@@ -75,9 +75,10 @@ tl1_ground_wire = get_ground_wire(
                     )
 
 
-c_type_v   = [["Acsr"]    , ["ACCC"]    , ["ACCC"], ["ACCC"], ["ACCC"] ]
-c_name_v   = [["Bluebird"], ["BLUEBIRD"], ["DOVE"], ["DOVE"], ["DOVE"] ]
-bundling_v = [1           , 1           , 2       ,   3     , 4]
+c_type_v   = [["Acsr"]    , ["ACCC"]    , ["ACCC"]  , ["ACCC"]  , ["ACCC"]  , ["Acsr"]  , ["ACCC"]  , ["ACCC"]  , ["ACCC"]  ]
+c_name_v   = [["Bluebird"], ["BLUEBIRD"], ["ELPASO"], ["ELPASO"], ["ELPASO"], ["FALCON"], ["FALCON"], ["LUBBOCK"], ["LUBBOCK"]  ]
+bundling_v = [1           , 1           , 2         ,   3       , 4         , 2         , 2         , 3          , 4]
+idx_error_v= [1,1,1,1,1,6,6,6,6]
 
 conductor_filter_v  = []
 conductor_df_filt_v = []
@@ -88,6 +89,7 @@ tl_v                = []
 df = DataFrame(Voltage = Float64[], 
                 C_type = String[],
                 C_name = String[],
+                kcmil  = Float64[],
                 bundling = Int64[],
                 r1 = Float64[],
                 x1 = Float64[],
@@ -112,21 +114,23 @@ for i in eachindex(c_type_v)
     push!( tl_parameters_v, get_tl_parameters( tl1_basicdata, tl1_geometry, tl_conductor_v[i], tl1_ground_wire ) )
     push!(tl_v, get_line_struct( tl1_basicdata, tl1_geometry, tl_conductor_v[i], tl1_ground_wire, tl_parameters_v[i] ) )
 
+    
 
     push!( df, (
-            Voltage = 345.0, 
-            C_type = c_type_v[i][1],
-            C_name = c_name_v[i][1],
+            Voltage  = 345.0, 
+            C_type   = c_type_v[i][1],
+            C_name   = c_name_v[i][1],
+            kcmil    = tl_conductor_v[i].kcmil,
             bundling = bundling_v[i],
-            r1 = tl_parameters_v[i].r1,
-            x1 = tl_parameters_v[i].x1,
-            b1 = tl_parameters_v[i].b1,
+            r1   = tl_parameters_v[i].r1,
+            x1   = tl_parameters_v[i].x1,
+            b1   = tl_parameters_v[i].b1,
             Zsil = tl_parameters_v[i].Z_sil,
-            sil = tl_parameters_v[i].sil, 
-            r1_rel_err = ( tl_parameters_v[i].r1 - tl_parameters_v[1].r1 ) / tl_parameters_v[1].r1,
-            x1_rel_err = ( tl_parameters_v[i].x1 - tl_parameters_v[1].x1 ) / tl_parameters_v[1].x1,
-            b1_rel_err = ( tl_parameters_v[i].b1 - tl_parameters_v[1].b1 ) / tl_parameters_v[1].b1, 
-            sil_ratio  = tl_parameters_v[i].sil  / tl_parameters_v[1].sil )
+            sil  = tl_parameters_v[i].sil, 
+            r1_rel_err = ( tl_parameters_v[i].r1 - tl_parameters_v[idx_error_v[i]].r1 ) / tl_parameters_v[idx_error_v[i]].r1,
+            x1_rel_err = ( tl_parameters_v[i].x1 - tl_parameters_v[idx_error_v[i]].x1 ) / tl_parameters_v[idx_error_v[i]].x1,
+            b1_rel_err = ( tl_parameters_v[i].b1 - tl_parameters_v[idx_error_v[i]].b1 ) / tl_parameters_v[idx_error_v[i]].b1, 
+            sil_ratio  = tl_parameters_v[i].sil  / tl_parameters_v[idx_error_v[i]].sil )
             ) 
 end
 
