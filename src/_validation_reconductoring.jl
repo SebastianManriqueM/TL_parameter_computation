@@ -74,68 +74,141 @@ tl1_ground_wire = get_ground_wire(
                     rowindex = 1
                     )
 
-tl1_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire )
+
+c_type_v   = [["Acsr"]    , ["ACCC"]    , ["ACCC"], ["ACCC"], ["ACCC"] ]
+c_name_v   = [["Bluebird"], ["BLUEBIRD"], ["DOVE"], ["DOVE"], ["DOVE"] ]
+bundling_v = [1           , 1           , 2       ,   3     , 4]
+
+conductor_filter_v  = []
+conductor_df_filt_v = []
+tl_conductor_v      = []
+tl_parameters_v     = []
+tl_v                = []
+
+df = DataFrame(Voltage = Float64[], 
+                C_type = String[],
+                C_name = String[],
+                bundling = Int64[],
+                r1 = Float64[],
+                x1 = Float64[],
+                b1 = Float64[],
+                Zsil = Float64[],
+                sil = Float64[],
+                r1_rel_err = Float64[],
+                x1_rel_err = Float64[],
+                b1_rel_err = Float64[], 
+                sil_ratio = Float64[])
+
+for i in eachindex(c_type_v)
+    push!( conductor_filter_v , get_struct_conductor_filters( c_type_v[i], c_name_v[i] ) )
+    push!( conductor_df_filt_v,  get_tl_conductor( df_conductors, conductor_filter_v[i] ) )
+
+    push!( tl_conductor_v, get_conductor( 
+                                conductor_df_filt_v[i], 
+                                tl1_basicdata, 
+                                bundling = bundling_v[i],
+                                rowindex = 1
+                                ) )
+    push!( tl_parameters_v, get_tl_parameters( tl1_basicdata, tl1_geometry, tl_conductor_v[i], tl1_ground_wire ) )
+    push!(tl_v, get_line_struct( tl1_basicdata, tl1_geometry, tl_conductor_v[i], tl1_ground_wire, tl_parameters_v[i] ) )
 
 
-tl1 = get_line_struct( tl1_basicdata, tl1_geometry, tl1_conductor, tl1_ground_wire, tl1_parameters )
+    push!( df, (
+            Voltage = 345.0, 
+            C_type = c_type_v[i][1],
+            C_name = c_name_v[i][1],
+            bundling = bundling_v[i],
+            r1 = tl_parameters_v[i].r1,
+            x1 = tl_parameters_v[i].x1,
+            b1 = tl_parameters_v[i].b1,
+            Zsil = tl_parameters_v[i].Z_sil,
+            sil = tl_parameters_v[i].sil, 
+            r1_rel_err = ( tl_parameters_v[i].r1 - tl_parameters_v[1].r1 ) / tl_parameters_v[1].r1,
+            x1_rel_err = ( tl_parameters_v[i].x1 - tl_parameters_v[1].x1 ) / tl_parameters_v[1].x1,
+            b1_rel_err = ( tl_parameters_v[i].b1 - tl_parameters_v[1].b1 ) / tl_parameters_v[1].b1, 
+            sil_ratio  = tl_parameters_v[i].sil  / tl_parameters_v[1].sil )
+            ) 
+end
+
+using CSV
+#using Filesystem
+rel_path = "output_examples/"
+if !isdir(rel_path) 
+     mkdir(rel_path) 
+end
+CSV.write( rel_path * "Comparison_reconductoring_345kv.csv", df )
 
 
 
-#Conductor 2
-conductor2_filter  = get_struct_conductor_filters( ["ACCC"], ["BLUEBIRD"] )
-filt2_conductor_df = get_tl_conductor( df_conductors, conductor2_filter )
-
-tl2_conductor = get_conductor( 
-                filt2_conductor_df, 
-                tl1_basicdata, 
-                bundling = n_bundling,
-                rowindex = 1
-                )
-
-tl2_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl2_conductor, tl1_ground_wire )
-
-tl2 = get_line_struct( tl1_basicdata, tl1_geometry, tl2_conductor, tl1_ground_wire, tl2_parameters )
-                
-abs_err_r1 = tl1.parameters.r1 - tl2.parameters.r1
-rel_err_r1 = abs_err_r1 / tl1.parameters.r1
-
-abs_err_x1 = tl1.parameters.x1 - tl2.parameters.x1
-rel_err_x1 = abs_err_x1 / tl1.parameters.x1
-
-abs_err_b1 = tl1.parameters.b1 - tl2.parameters.b1
-rel_err_b1 = abs_err_b1 / tl1.parameters.b1
-
-r1          = tl1.conductor.diameter * 0.5 * FACTOR_FT_INCH
-Xc1_Mohm_mi = (1.779/60) * log(1/r1)
+#St clair curve---------------
+Pbase = 100
+Vbase = 345
+Zbase = (Vbase^2) / Pbase
 
 
 
-
-#Conductor 3
-conductor3_filter  = get_struct_conductor_filters( ["ACCC"], ["DOVE"] )
-filt3_conductor_df = get_tl_conductor( df_conductors, conductor3_filter )
-
-tl3_conductor = get_conductor( 
-                filt3_conductor_df, 
-                tl1_basicdata, 
-                bundling = n_bundling+1,
-                rowindex = 1
-                )
-
-tl3_parameters = get_tl_parameters( tl1_basicdata, tl1_geometry, tl3_conductor, tl1_ground_wire )
-
-tl3 = get_line_struct( tl1_basicdata, tl1_geometry, tl3_conductor, tl1_ground_wire, tl3_parameters )
-                
-abs_err_r1_2 = tl1.parameters.r1 - tl3.parameters.r1
-rel_err_r1_2 = abs_err_r1_2 / tl1.parameters.r1
-
-abs_err_x1_2 = tl1.parameters.x1 - tl3.parameters.x1
-rel_err_x1_2 = abs_err_x1_2 / tl1.parameters.x1
-
-abs_err_b1_2 = tl1.parameters.b1 - tl3.parameters.b1
-rel_err_b1_2 = abs_err_b1_2 / tl1.parameters.b1
+X_s = 0.333*im
+X_r = 0.333*im
 
 
+
+E2 = 1.0
+Es = 1.0
+
+ΔV    = 0.05
+Er_L  = Es * (1-ΔV)
+θ_1_L = 40.0 * ( π / 180.0 )
+Δθ_1  = 0.5  * ( π / 180.0 )
+
+Len = 100.0
+
+Ns = 0
+Nr = 0
+N = 0
+
+E1 = 0.98
+
+#R  = tl1.parameters.r1 * Len / Zbase
+#XL = tl1.parameters.x1 * Len * im / Zbase
+R  = 0.00571 * Len / Zbase
+XL = 0.06432 * Len * im / Zbase
+f_s = (100-Ns)/100
+f_r = (100-Nr)/100
+
+
+B   = (tl1.parameters.b1/1000000) * Len
+#B   = 0.6604 * Len
+Bms = 0.5*B*f_s
+Bmr = 0.5*B*f_r
+Xcs= (1/Bms)*-1*im
+Xcr= (1/Bmr)*-1*im
+Xcs= ( (1/Bms)*-1*im ) / Zbase
+Xcr= ( (1/Bmr)*-1*im ) / Zbase
+
+
+
+θ_1 = -50.0 * ( π / 180.0 )
+
+Z  = [ X_s+Xcs -Xcs 0 ; Xcs R+XL+Xcr+Xcs -Xcr; 0 -Xcr X_r+Xcr ]
+iZ = inv(Z)
+E_v = [ E1*cos(θ_1) + E1*sin(θ_1)*im ; 0; -E2 ]
+I_v = iZ * E_v
+
+Es_calc = ( I_v[1] - I_v[2] ) * Xcm * f_s
+abs(Es_calc)
+Er_calc = ( I_v[2] - I_v[3] ) * Xcm * f_r
+abs(Er_calc)
+
+Vx2 = I_v[3]*X_r
+
+Er_calc-Vx2
+E1_calc = I_v[1]*X_s + Es_calc
+atan(imag(E1_calc)/real(E1_calc))
+
+println("Power [pu]")
+Sline = Es_calc * conj( I_v[2] )
+
+aa=1
 
 ##WORK ON ADD GET CONDUCTOR/GROUND WIRE TYPICAL
 ## WORK ON THE OPTIONS (RECONDUCTORING, VOLTAGE UPGRADE, ADD CIRCUITS, AC TO DC....) AND THE COST OF EACH ONE
