@@ -31,7 +31,12 @@ function get_tl_object( filt_tl1_df )
     filt_conductor_df = get_tl_conductor( df_conductors, conductor1_filter )
     println(filt_conductor_df)
 
-    tl1_conductor = get_conductor( filt_conductor_df, tl1_basicdata, 2)
+    tl1_conductor = get_conductor( 
+        filt_conductor_df, 
+        tl1_basicdata, 
+        bundling = 2,
+        rowindex = 1
+        )
     
     ground_w_filter = get_struct_ground_wire_filters( ["Alumoweld"], [49.53] )
     filt_ground_w_df = get_tl_ground_wire( df_ground_wires, ground_w_filter )  
@@ -46,19 +51,36 @@ end
 
 
 #Set TL filtering options
-tl1_filter        = get_user_filter_tl_geometry( 345.0, 2, 1, ["Ohio"], ["Pole"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+#tl1_filter        = get_user_filter_tl_geometry( 345.0; 2, 1, ["Ohio"], ["Pole"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+tl1_filter = get_user_filter_tl_geometry(
+                        345.0; #voltage
+                        n_circuits=2,
+                        n_ground_wires=1,
+                        v_str_states=["Ohio"],
+                        v_str_structure_types=["Pole"]
+                        )
 println("TL1 - FILTER ONLY ONE STATE: $(tl1_filter.state)")
 filt_tl1_df       = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 tl_1 = get_tl_object( filt_tl1_df )
 
 #Set TL filtering options
-tl2_filter        = get_user_filter_tl_geometry( 345.0, 2, 2, ["Utah"], ["Pole"] )#TLFilters( 345, 2, 2, ["Ohio"], ["Lattice"] )
+tl2_filter = get_user_filter_tl_geometry(
+    345.0; #voltage
+    n_circuits=2,
+    n_ground_wires=2,
+    v_str_states=["Utah"],
+    v_str_structure_types=["Pole"]
+    )
+
 println("TL1 - FILTER ONLY ONE STATE: $(tl2_filter.state)")
 filt_tl2_df       = get_tl_df_all_filters(df_tl_geometry, tl2_filter)
 tl_2 = get_tl_object( filt_tl2_df )
 
-println("Resistance diferences\n1 GW [ohm/kft] \t\t 2 GW [ohm/kft]\t\t Abs diff [ohm/kft]\tRel diff [%]")
-println(tl_1.parameters.r1, "\t", tl_2.parameters.r1, "\t", tl_1.parameters.r1- tl_2.parameters.r1, "\t", ((tl_1.parameters.r1- tl_2.parameters.r1)/min(tl_1.parameters.r1, tl_2.parameters.r1))*100 )
+println("Resistance diferences\n1 GW [ohm/mile] \t\t 2 GW [ohm/mile]\t\t Abs diff [ohm/mile]\t\tRel diff [%]")
+println(tl_1.parameters.r1, "\t\t", tl_2.parameters.r1, "\t\t", tl_1.parameters.r1- tl_2.parameters.r1, "\t\t", ((tl_1.parameters.r1- tl_2.parameters.r1)/min(tl_1.parameters.r1, tl_2.parameters.r1))*100 )
 
-println("Inductive reactance\n1 GW [ohm/kft] \t\t 2 GW [ohm/kft]\t\t Abs diff [ohm/kft]\tRel diff [%]")
-println(tl_1.parameters.x1, "\t", tl_2.parameters.x1, "\t", tl_1.parameters.x1- tl_2.parameters.x1, "\t", ((tl_1.parameters.x1- tl_2.parameters.x1)/min(tl_1.parameters.x1, tl_2.parameters.x1))*100 )
+println("Inductive reactance\n1 GW [ohm/mile] \t\t 2 GW [ohm/mile]\t\t Abs diff [ohm/mile]\t\tRel diff [%]")
+println(tl_1.parameters.x1, "\t\t", tl_2.parameters.x1, "\t\t", tl_1.parameters.x1- tl_2.parameters.x1, "\t\t", ((tl_1.parameters.x1- tl_2.parameters.x1)/min(tl_1.parameters.x1, tl_2.parameters.x1))*100 )
+
+println("Susceptance \n1 GW [uSi/mile] \t\t 2 GW [uSi/mile]\t\t Abs diff [uSi/mile]\t\tRel diff [%]")
+println(tl_1.parameters.b1, "\t\t", tl_2.parameters.b1, "\t\t", tl_1.parameters.b1- tl_2.parameters.b1, "\t\t", ((tl_1.parameters.b1- tl_2.parameters.b1)/min(tl_1.parameters.b1, tl_2.parameters.b1))*100 )
