@@ -2,6 +2,30 @@ include("definitions.jl")
 include("common_filters.jl")
 
 #|------------------------------------------------|
+#|-----------API FOR USER GET CONDUCTOR-----------|
+#|________________________________________________|
+
+
+function get_ground_wire(
+    type_v::Union{Vector{String}, Matrix{String}}, 
+    name_v::Union{Vector{String}, Matrix{String}},
+    df_ground_wires::DataFrame;
+    rowindex::Int = 1 
+)
+    ground_w_filter = get_struct_ground_wire_filters( type_v, name_v )
+    filt_ground_w_df = get_tl_ground_wire( df_ground_wires, ground_w_filter )
+
+
+    tl_ground_wire = get_ground_w(
+                        filt_ground_w_df, 
+                        tl1_basicdata,
+                        rowindex = rowindex
+                        )
+                        
+    return tl_ground_wire
+end
+
+#|------------------------------------------------|
 #|----------GET STRUCT FILTERS FUNCTIONS----------|
 #|________________________________________________|
 
@@ -82,7 +106,7 @@ end
 
 
 
-function get_ground_wire( 
+function get_ground_w( 
     df::DataFrame,
     basicdata::TLBasicData;
     rowindex::Int = 1 

@@ -1,6 +1,37 @@
 include("definitions.jl")
 include("common_filters.jl")
 
+
+#|------------------------------------------------|
+#|-----------API FOR USER GET CONDUCTOR-----------|
+#|________________________________________________|
+function get_transmission_line_geometry(
+    voltage::Float64,
+    df_tl_geometry::DataFrame;
+    n_circuits::Int=1, 
+    n_ground_wires::Int=2, 
+    v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
+    v_str_structure_types::Union{Vector{String}, Matrix{String}}=[""],
+)
+     #Set TL filtering options
+    tl_filter = get_user_filter_tl_geometry(
+                            voltage; #voltage
+                            n_circuits = n_circuits,
+                            n_ground_wires = n_ground_wires,
+                            v_str_states = v_str_states,
+                            v_str_structure_types = v_str_structure_types
+                            )
+
+    #println("FILTER ONLY ONE STATE: $(tl_filter.state)")
+    filt_tl_df = get_tl_df_all_filters(df_tl_geometry, tl_filter)
+
+    tl_basicdata = get_tl_basicdata( filt_tl_df )
+    tl_geometry = get_tl_geometry( filt_tl_df, tl_basicdata )
+
+    return tl_basicdata, tl_geometry
+end
+
+
 #|------------------------------------------------|
 #|----------GET STRUCT FILTERS FUNCTIONS----------|
 #|________________________________________________|

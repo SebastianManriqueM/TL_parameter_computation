@@ -1,6 +1,32 @@
 include("definitions.jl")
 include("common_filters.jl")
 
+
+#|------------------------------------------------|
+#|-----------API FOR USER GET CONDUCTOR-----------|
+#|________________________________________________|
+
+function get_conductor( 
+    type_v::Union{Vector{String}, Matrix{String}}, 
+    name_v::Union{Vector{String}, Matrix{String}},
+    df_conductors::DataFrame,
+    tl_basicdata::TLBasicData;
+    bundling::Int = 0, 
+    bundlingspacing::Float64 = 18.0, 
+    rowindex::Int = 1 
+ )
+    conductor_filter = get_struct_conductor_filters( type_v, name_v )
+    filt_conductor_df = get_tl_conductor( df_conductors, conductor_filter )
+    tl_conductor = get_phase_conductor( 
+                    filt_conductor_df, 
+                    tl_basicdata; 
+                    bundling = bundling,
+                    bundlingspacing = bundlingspacing,
+                    rowindex = rowindex
+                     )
+                   
+    return tl_conductor
+end
 #|------------------------------------------------|
 #|----------GET STRUCT FILTERS FUNCTIONS----------|
 #|________________________________________________|
@@ -119,7 +145,7 @@ function get_gmr_bundling_xy(
     return GMR_bundle^( 1 / (n * n) )
 end
 
-function get_conductor( 
+function get_phase_conductor( 
     df::DataFrame, 
     basicdata::TLBasicData; 
     bundling::Int = 0, 
@@ -129,11 +155,11 @@ function get_conductor(
 
     rowindex = check_index_df_rows( rowindex, df, nameof(var"#self#") )
     if bundling == 0
-        if basicdata.voltage_kv > 700
+        if basicdata.voltage_kv > 700.0
             bundling = 4
-        elseif basicdata.voltage_kv > 345
+        elseif basicdata.voltage_kv > 345.0
             bundling = 3
-        elseif basicdata.voltage_kv > 138
+        elseif basicdata.voltage_kv > 138.0
             bundling = 2
         else
             bundling = 1

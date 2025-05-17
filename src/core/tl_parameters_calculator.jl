@@ -1,7 +1,22 @@
 include("definitions.jl")
 include("common_filters.jl")
 
+#|------------------------------------------------|
+#|-----------API FOR USER GET CONDUCTOR-----------|
+#|________________________________________________|
 
+function get_transmission_line(
+    tl_basicdata::TLBasicData,
+    tl_geometry::TLGeometry,
+    tl_conductor::TLConductor,
+    tl_ground_wire::TLGroundWire
+    )::Line
+    
+    tl_parameters = get_tl_parameters( tl_basicdata, tl_geometry, tl_conductor, tl_ground_wire )
+    tl = get_line_struct( tl_basicdata, tl_geometry, tl_conductor, tl_ground_wire, tl_parameters )
+
+    return tl
+end
 
 #|------------------------------------------------|
 #|------------GET TL PARAMETERS STRUCT------------|
