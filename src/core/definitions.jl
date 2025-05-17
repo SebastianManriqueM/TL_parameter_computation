@@ -6,6 +6,9 @@ using LinearAlgebra
 using Combinatorics
 using Statistics
 
+
+include("io_prints.jl")
+
 #|------------------------------------------------|
 #|-------------CONSTANTS AND FACTORS--------------|
 #|________________________________________________|
@@ -112,11 +115,11 @@ abstract type AbstractFiltersStructs end
 
 abstract type AbstractFilterTLGeometry <: AbstractFiltersStructs end
 
-abstract type AbstractFilterCables <: AbstractFiltersStructs end
+abstract type AbstractCablesFilter <: AbstractFiltersStructs end
 
-abstract type FilterConductor <: AbstractFilterCables end
+abstract type ConductorFilter <: AbstractCablesFilter end
 
-abstract type FilterGroundWire <: AbstractFilterCables end
+abstract type GroundWireFilter <: AbstractCablesFilter end
 
 #Struct for user filter of transmission lines geometries
 mutable struct TLFilters <: AbstractFilterTLGeometry
@@ -128,22 +131,22 @@ mutable struct TLFilters <: AbstractFilterTLGeometry
 
  end
 
-mutable struct ConductorFilterName <: FilterConductor
+mutable struct ConductorFilterName <: ConductorFilter
     type::Union{Vector{String}, Matrix{String}}
     codeword::Union{Vector{String}, Matrix{String}}
 end
 
-mutable struct ConductorFilterKcm <: FilterConductor
+mutable struct ConductorFilterKcm <: ConductorFilter
     type::Union{Vector{String}, Matrix{String}}
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
 
-mutable struct GroundWireFilterAWG <: FilterGroundWire
+mutable struct GroundWireFilterAWG <: GroundWireFilter
     type::Union{Vector{String}, Matrix{String}}
     awg::Union{Vector{String}, Matrix{String}}
 end
 
-mutable struct GroundWireFilterKcm <: FilterGroundWire
+mutable struct GroundWireFilterKcm <: GroundWireFilter
     type::Union{Vector{String}, Matrix{String}}
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
@@ -152,6 +155,7 @@ end
 
 #Structs part of Abstact type TransmissionLine
 mutable struct TLBasicData
+    name::String
     voltage_kv::Float64
     n_circuits::Int
     n_ground_wire::Int
