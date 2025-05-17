@@ -108,18 +108,18 @@ COL_INDEX_GROUND_WIRE = Dict(
 #|------------------------------------------------|
 #|--------------------SRUCTS----------------------|
 #|________________________________________________|
-abstract type FiltersStructs end
+abstract type AbstractFiltersStructs end
 
-abstract type FilterTLGeometry <: FiltersStructs end
+abstract type AbstractFilterTLGeometry <: AbstractFiltersStructs end
 
-abstract type FilterCables <: FiltersStructs end
+abstract type AbstractFilterCables <: AbstractFiltersStructs end
 
-abstract type FilterConductor <: FilterCables end
+abstract type FilterConductor <: AbstractFilterCables end
 
-abstract type FilterGroundWire <: FilterCables end
+abstract type FilterGroundWire <: AbstractFilterCables end
 
 #Struct for user filter of transmission lines geometries
-mutable struct TLFilters <: FilterTLGeometry
+mutable struct TLFilters <: AbstractFilterTLGeometry
     voltage_kv::Int
     n_circuits::Int
     n_ground_wire::Int
@@ -200,8 +200,8 @@ mutable struct TLGroundWire
     type::String
     awg::String
     kcmil::Float64
-    diameter::Float64
-    gmr::Float64
+    diameter::Float64 #inches
+    gmr::Float64      #inches
     Rdc_20::Float64
     XLinternal::Float64
     XCinternal::Float64
@@ -234,9 +234,9 @@ mutable struct ElectricalParameters
     #Z012_pu::Matrix{Float64}        #Sequence Matrix
 end
 
-abstract type TransmissionLine end
+abstract type AbstractTransmissionLine end
 
-mutable struct Line <: TransmissionLine
+mutable struct Line <: AbstractTransmissionLine
     basicdata::TLBasicData
     geometry::TLGeometry
     conductor::TLConductor
