@@ -9,6 +9,7 @@ include("common_filters.jl")
 function get_ground_wire(
     type_v::Union{Vector{String}, Matrix{String}}, 
     name_v::Union{Vector{String}, Matrix{String}},
+    tl_basicdata::TLBasicData,
     df_ground_wires::DataFrame;
     rowindex::Int = 1 
 )
@@ -18,7 +19,7 @@ function get_ground_wire(
 
     tl_ground_wire = get_ground_w(
                         filt_ground_w_df, 
-                        tl1_basicdata,
+                        tl_basicdata,
                         rowindex = rowindex
                         )
                         
