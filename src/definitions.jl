@@ -6,6 +6,10 @@ using LinearAlgebra
 using Combinatorics
 using Statistics
 
+#|------------------------------------------------|
+#|-------------CONSTANTS AND FACTORS--------------|
+#|________________________________________________|
+
 FACTOR_FT_INCH       = 1.0 / 12.0
 FACTOR_MILES_KFT     = 1.0 / 5.28
 FACTOR_KFT_FT        = 1 / 1000
@@ -20,10 +24,16 @@ XC_FACTOR_MOHM_KFT   = 9.39312 #Stevenson p.176
 ϵ_0_F_METER          = 8.85e-12
 ϵ_AIR_μF_MILE        = 1.4240e-2
 
+#|------------------------------------------------|
+#|---------------CONSTANT VECTORS-----------------|
+#|________________________________________________|
 DATA_SET_TL_VOLTAGES = [33 345 500 735]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
 US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
+#|------------------------------------------------|
+#|----------------CONSTANT DICTS------------------|
+#|________________________________________________|
 #Dictionary for mapping Transmission Lines Geometry Dataframe Columns
 COL_INDEX_MAP_TL = Dict(
     "code"           => 1,
@@ -95,7 +105,9 @@ COL_INDEX_GROUND_WIRE = Dict(
 )
 
 
-
+#|------------------------------------------------|
+#|--------------------SRUCTS----------------------|
+#|________________________________________________|
 abstract type FiltersStructs end
 
 abstract type FilterTLGeometry <: FiltersStructs end
