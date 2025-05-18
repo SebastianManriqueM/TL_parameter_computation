@@ -3,7 +3,7 @@ mutable struct TLFilters <: AbstractFilterTLGeometry
     n_circuits::Int
     n_ground_wire::Int
     state::StringArrayFilteringData
-    structure_type::Union{Vector{String}, Matrix{String}}
+    structure_type::StringArrayFilteringData
  end
 
 mutable struct ConductorFilterName <: ConductorFilter
@@ -13,7 +13,7 @@ end
 
 mutable struct ConductorFilterKcm <: ConductorFilter
     type::StringArrayFilteringData
-    kcmil::Union{Vector{Float64}, Matrix{Float64}}
+    kcmil::FloatArrayFilteringData
 end
 
 mutable struct GroundWireFilterAWG <: GroundWireFilter
@@ -23,5 +23,5 @@ end
 
 mutable struct GroundWireFilterKcm <: GroundWireFilter
     type::StringArrayFilteringData
-    kcmil::StringArrayFilteringData
+    kcmil::FloatArrayFilteringData
 end
