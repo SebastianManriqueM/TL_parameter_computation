@@ -1,33 +1,26 @@
-
-# mutable struct Line <: AbstractTransmissionLine
-#     basicdata::TLBasicData
-#     geometry::TLGeometry
-#     conductor::TLConductor
-#     groundw::TLGroundWire
-#     parameters::ElectricalParameters
-# end
-
 Base.show(io::IO, tl::AbstractTransmissionLine) = print(io, 
-                                                    "    basic_data: ", typeof(tl.basicdata),
+                                                    "Transmission Line Data:",
+                                                    "\n    basicdata: ", typeof(tl.basicdata),
+                                                    "\n        - voltage_kv: ", tl.basicdata.voltage_kv,
+                                                    "\n        - n_circuits: ", tl.basicdata.n_circuits,
+                                                    "\n        - structure_code: ", tl.basicdata.structure_code,
                                                     "\n    geometry: ", typeof(tl.geometry),
                                                     "\n    conductor: ", typeof(tl.conductor),
-                                                    "\n    ground_w: ", typeof(tl.groundw),
+                                                    "\n        - type: ", tl.conductor.type,
+                                                    "\n        - codeword: ", tl.conductor.codeword,
+                                                    "\n        - stranding: ", tl.conductor.stranding,
+                                                    "\n        - kcmil: ", tl.conductor.kcmil,
+                                                    "\n    groundwire: ", typeof(tl.groundwire),
+                                                    "\n        - type: ", tl.groundwire.type,
+                                                    "\n        - awg: ", tl.groundwire.awg,
+                                                    "\n        - kcmil: ", tl.groundwire.kcmil,
                                                     "\n    parameters: ", typeof(tl.parameters),
+                                                    "\n        - r1: ", tl.parameters.r1,
+                                                    "\n        - x1: ", tl.parameters.x1,
+                                                    "\n        - b1: ", tl.parameters.b1,
                                                     "\n"
                                                      )
-# mutable struct TLBasicData
-#     name::String
-#     voltage_kv::Float64
-#     n_circuits::Int
-#     n_ground_wire::Int
-#     state::String
-#     structure_type::String
-#     structure_code::String
-#     distance::Float64       #Miles
-#     S_rated::Float64        #MVA
-#     frequency::Float64      #Hz
-#     gnd_rho::Float64        #ohm/m
-# end
+
 Base.show(io::IO, basic_data::TLBasicData) = print(io, 
                                                     "Transmission Line Basic Data:",
                                                     "\n    name: ", basic_data.name,
@@ -44,15 +37,6 @@ Base.show(io::IO, basic_data::TLBasicData) = print(io,
                                                     "\n"
                                                      )
 
-
-
-# mutable struct TLGeometry
-#     n_cables::Int
-#     x_coordinates::Matrix{Float64}  #ft
-#     y_coordinates::Matrix{Float64}  #ft
-#     combinations::Vector{Vector{Int64}}
-#     distances::Matrix{Float64}      #ft
-# end
 Base.show(io::IO, geometry::TLGeometry) = print(io, 
                                                     "Transmission Line Geometry Data:",
                                                     "\n    n_cables: ", geometry.n_cables,
@@ -63,29 +47,6 @@ Base.show(io::IO, geometry::TLGeometry) = print(io,
                                                     "\n"
                                                      )
 
-# mutable struct TLConductor
-#     type::String
-#     codeword::String
-#     stranding::String
-#     kcmil::Float64
-#     diameter::Float64   #inches
-#     gmr::Float64        #ft
-#     Rac_tnom::Float64   #ohm/kft
-#     XLinternal::Float64 #ohm/kft
-#     XCinternal::Float64 #Mohm/kft
-#     ampacity::Float64   #Amperes
-#     #weight::Float64 #-Could be interesting to add constraints TODO
-#     #strenght::Float64 #-Could be interesting to add constraints TODO
-#     bundling::Int
-#     bundlingspacing::Float64
-#     bundling_xcoordinates::Matrix{Float64}
-#     bundling_ycoordinates::Matrix{Float64}
-#     gmr_bundling::Float64        #ft
-#     XL_bundling::Float64 #ohm/kft
-#     r_ft_c_bundling::Float64 #equivalent radius in feet for C calculations
-#     XC_bundling::Float64 #Mohm*kft
-#     ampacity_bundling::Float64   #Amperes
-# end
 Base.show(io::IO, conductor::TLConductor) = print(io, 
                                                     "Transmission Conductor Data:",
                                                     "\n    type: ", conductor.type,
@@ -110,16 +71,6 @@ Base.show(io::IO, conductor::TLConductor) = print(io,
                                                     "\n"
                                                      )
 
-# mutable struct TLGroundWire
-#     type::String
-#     awg::String
-#     kcmil::Float64
-#     diameter::Float64 #inches
-#     gmr::Float64      #inches
-#     Rdc_20::Float64
-#     XLinternal::Float64
-#     XCinternal::Float64
-# end
 Base.show(io::IO, ground_wire::TLGroundWire) = print(io, 
                                                     "Transmission Line Ground Wire Data:",
                                                     "\n    type: ", ground_wire.type,
@@ -133,31 +84,6 @@ Base.show(io::IO, ground_wire::TLGroundWire) = print(io,
                                                     "\n"
                                                      )
 
-# mutable struct ElectricalParameters
-#     Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix                          ohm/mile
-#     Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed      ohm/mile
-#     Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed          ohm/mile
-#     Z_kron_ft::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - fully transposed    ohm/mile
-#     Z012_ft::Matrix{ComplexF64}     #Series impedance Sequence Matrix - fully transposed        ohm/mile
-#     Y_kron_nt::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - non transposed      ohm/mile
-#     Y012_nt::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - non transposed          ohm/mile
-#     Y_kron_ft::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - fully transposed    ohm/mile
-#     Y012_ft::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - fully transposed        ohm/mile
-#     r1::Float64                     #Positive/negative sequence series resistance Ohms/mile              ohm/mile
-#     x1::Float64                     #Positive/negative sequence series reactance  Ohms/mile              ohm/mile
-#     b1::Float64                     #Positive/negative sequence shunt suceptance  uS/mile              uS/mile
-#     r0::Float64                     #Zero sequence series resistance
-#     x0::Float64                     #Zero sequence series reactance
-#     b0::Float64                     #Zero sequence shunt suceptance                             uS/mile
-#     r0m::Float64                    #Zero sequence mutual resistance (Between circuits)
-#     x0m::Float64                    #Zero sequence mutual reactance (Between circuits)
-#     b0m::Float64                    #Zero sequence mutual suceptance (Between circuits)
-#     Z_sil::Float64                  #Surge impedance in Ohms
-#     sil::Float64                    # Surge Impedance Load in MW
-#     #Zabcg_pu::Matrix{Float64}       #Primitive Matrix
-#     #Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
-#     #Z012_pu::Matrix{Float64}        #Sequence Matrix
-# end
 Base.show(io::IO, parameter::ElectricalParameters) = print(io, 
                                                     "Transmission Conductor Data:",
                                                     "\n    Zabcg: ", typeof(parameter.Zabcg),

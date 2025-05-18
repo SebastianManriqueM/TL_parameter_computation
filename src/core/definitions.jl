@@ -1,13 +1,13 @@
-using Parameters
-using XLSX
-using DataFrames
+# using Parameters
+# using XLSX
+# using DataFrames
 
-using LinearAlgebra
-using Combinatorics
-using Statistics
+# using LinearAlgebra
+# using Combinatorics
+# using Statistics
 
 
-include("io_prints.jl")
+# include("io_prints.jl")
 
 #|------------------------------------------------|
 #|-------------CONSTANTS AND FACTORS--------------|
@@ -244,6 +244,6 @@ mutable struct Line <: AbstractTransmissionLine
     basicdata::TLBasicData
     geometry::TLGeometry
     conductor::TLConductor
-    groundw::TLGroundWire
+    groundwire::TLGroundWire
     parameters::ElectricalParameters
 end

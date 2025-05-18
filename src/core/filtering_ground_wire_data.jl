@@ -1,5 +1,5 @@
-include("definitions.jl")
-include("common_filters.jl")
+# include("definitions.jl")
+# include("common_filters.jl")
 
 #|------------------------------------------------|
 #|-----------API FOR USER GET CONDUCTOR-----------|
@@ -102,10 +102,8 @@ end
 
 
 #|------------------------------------------------|
-#|-------------GET TL CONDUCTOR STRUCT------------|
+#|------------GET TL GROUND WIRE STRUCT-----------|
 #|________________________________________________|
-
-
 
 function get_ground_w( 
     df::DataFrame,

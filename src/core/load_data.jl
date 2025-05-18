@@ -1,4 +1,4 @@
-include("definitions.jl")
+# include("definitions.jl")
 
 function load_transmission_line_db( )
     #Read data from XLSX file (Geometries, T Lines, Conductors, etc) 
