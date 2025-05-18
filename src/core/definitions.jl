@@ -151,10 +151,11 @@ mutable struct GroundWireFilterKcm <: GroundWireFilter
     kcmil::Union{Vector{Float64}, Matrix{Float64}}
 end
 
-
-
+abstract type AbstractTLPhysicalComponent end
+abstract type AbstractTLCable <: AbstractTLPhysicalComponent end
+abstract type AbstractTLParameters end
 #Structs part of Abstact type TransmissionLine
-mutable struct TLBasicData
+mutable struct TLBasicData <: AbstractTLPhysicalComponent
     name::String
     voltage_kv::Float64
     n_circuits::Int
@@ -168,7 +169,7 @@ mutable struct TLBasicData
     gnd_rho::Float64        #ohm/m
 end
 
-mutable struct TLGeometry
+mutable struct TLGeometry <: AbstractTLPhysicalComponent
     n_cables::Int
     x_coordinates::Matrix{Float64}  #ft
     y_coordinates::Matrix{Float64}  #ft
@@ -176,7 +177,8 @@ mutable struct TLGeometry
     distances::Matrix{Float64}      #ft
 end
 
-mutable struct TLConductor
+
+mutable struct TLConductor <: AbstractTLCable
     type::String
     codeword::String
     stranding::String
@@ -200,7 +202,7 @@ mutable struct TLConductor
     ampacity_bundling::Float64   #Amperes
 end
 
-mutable struct TLGroundWire
+mutable struct TLGroundWire <: AbstractTLCable
     type::String
     awg::String
     kcmil::Float64
@@ -212,7 +214,7 @@ mutable struct TLGroundWire
 end
 
 
-mutable struct ElectricalParameters
+mutable struct ElectricalParameters <: AbstractTLParameters
     Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix                          ohm/mile
     Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed      ohm/mile
     Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed          ohm/mile
@@ -240,7 +242,7 @@ end
 
 abstract type AbstractTransmissionLine end
 
-mutable struct Line <: AbstractTransmissionLine
+mutable struct OverHeadLine <: AbstractTransmissionLine
     basicdata::TLBasicData
     geometry::TLGeometry
     conductor::TLConductor

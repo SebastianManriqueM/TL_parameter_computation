@@ -10,7 +10,7 @@ function get_transmission_line(
     tl_geometry::TLGeometry,
     tl_conductor::TLConductor,
     tl_ground_wire::TLGroundWire
-    )::Line
+    )::OverHeadLine
 
     tl_parameters = get_tl_parameters( tl_basicdata, tl_geometry, tl_conductor, tl_ground_wire )
     tl = get_line_struct( tl_basicdata, tl_geometry, tl_conductor, tl_ground_wire, tl_parameters )
@@ -258,6 +258,6 @@ function get_line_struct(
     conductor::TLConductor,
     ground_wire::TLGroundWire,
     parameters::ElectricalParameters
-    )::Line
-    return Line( basicdata, geometry, conductor, ground_wire, parameters )
+    )::OverHeadLine
+    return OverHeadLine( basicdata, geometry, conductor, ground_wire, parameters )
 end
