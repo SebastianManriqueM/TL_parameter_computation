@@ -1,0 +1,27 @@
+name: Test-CI
+
+on:
+  push:
+  pull_request:
+    types:[opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Julia
+      uses: julia-actions/setup-julia@v1
+      with:
+        version: '1.10.4'
+
+    - name: Activate and instantiate test environment
+      run: |
+        julia -e 'using Pkg; Pkg.activate("test"); Pkg.instantiate()'
+
+    - name: Run tests
+      run: |
+        julia -e 'using Pkg; Pkg.activate("test"); include("test/runtests.jl")'
