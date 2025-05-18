@@ -2,15 +2,39 @@
 #|-----------API FOR USER GET CONDUCTOR-----------|
 #|________________________________________________|
 
+"""
+    get_ground_wire(
+        type_v::StringArrayFilteringData, 
+        codename_or_kcm_v::CableSpecificFilteringData,
+        tl_basicdata::TLBasicData,
+        df_ground_wires::DataFrame;
+        rowindex::Int = 1
+    ) -> GroundWire
 
+Retrieve the ground wire data for a given transmission line based on specified type and name filters.
+
+# Arguments
+- `type_v`: Vector or Matrix of strings specifying the type(s) of ground wire.
+- `codename_or_kcm_v`: Vector or Matrix containing wire names as strings or numerical identifiers.
+- `tl_basicdata`: Struct containing basic transmission line data.
+- `df_ground_wires`: DataFrame containing available ground wire data.
+- `rowindex`: (Optional) Integer index specifying the row to extract, defaults to `1`.
+
+# Returns
+- `GroundWire`: A struct containing the selected ground wire data.
+
+# Description
+This function applies filtering criteria based on `type_v` (Alumoweld, ACSR, etc) and `codename_or_kcm_v` (Codename or kcm). It returns a struct with the relevan ground wire records from `df_ground_wires`.
+
+"""
 function get_ground_wire(
-    type_v::Union{Vector{String}, Matrix{String}}, 
-    name_v::Union{Vector{String}, Matrix{String}},
+    type_v::StringArrayFilteringData, 
+    codename_or_kcm_v::CableSpecificFilteringData,
     tl_basicdata::TLBasicData,
     df_ground_wires::DataFrame;
     rowindex::Int = 1 
 )
-    ground_w_filter = get_struct_ground_wire_filters( type_v, name_v )
+    ground_w_filter = get_struct_ground_wire_filters( type_v, codename_or_kcm_v )
     filt_ground_w_df = get_tl_ground_wire( df_ground_wires, ground_w_filter )
 
 
@@ -28,16 +52,16 @@ end
 #|________________________________________________|
 
 function get_struct_ground_wire_filters( 
-    type::Union{Vector{String}, Matrix{String}}, 
-    awg::Union{Vector{String}, Matrix{String}} 
+    type::StringArrayFilteringData, 
+    awg::StringArrayFilteringData 
     )::GroundWireFilterAWG
 
     return GroundWireFilterAWG( type, awg )
 end
 
 function get_struct_ground_wire_filters( 
-    type::Union{Vector{String}, Matrix{String}}, 
-    kcm::Union{Vector{Float64}, Matrix{Float64}} 
+    type::StringArrayFilteringData, 
+    kcm::FloatArrayFilteringData 
     )::GroundWireFilterKcm
 
     return GroundWireFilterKcm( type, kcm )

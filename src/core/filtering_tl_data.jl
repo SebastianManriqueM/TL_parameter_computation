@@ -6,8 +6,8 @@ function get_transmission_line_geometry(
     df_tl_geometry::DataFrame;
     n_circuits::Int=1, 
     n_ground_wires::Int=2, 
-    v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
-    v_str_structure_types::Union{Vector{String}, Matrix{String}}=[""],
+    v_str_states::StringArrayFilteringData=[""], 
+    v_str_structure_types::StringArrayFilteringData=[""],
 )
      #Set TL filtering options
     tl_filter = get_user_filter_tl_geometry(
@@ -35,8 +35,8 @@ function get_user_filter_tl_geometry(
     voltage::Float64; 
     n_circuits::Int=1, 
     n_ground_wires::Int=2, 
-    v_str_states::Union{Vector{String}, Matrix{String}}=[""], 
-    v_str_structure_types::Union{Vector{String}, Matrix{String}}=[""]
+    v_str_states::StringArrayFilteringData=[""], 
+    v_str_structure_types::StringArrayFilteringData=[""]
     )::TLFilters
     return TLFilters( voltage, n_circuits, n_ground_wires, v_str_states, v_str_structure_types )
 end
@@ -55,7 +55,7 @@ function check_voltage_availability( value )
 end
 
 function clear_string_v_lead_trail_spaces!( 
-    string_v::Union{Vector{String}, Matrix{String}, Vector{SubString{String}}} 
+    string_v::Union{StringArrayFilteringData, Vector{SubString{String}}} 
     )
     i = 1
     for string in string_v
@@ -156,8 +156,8 @@ Apply multiple filters to a DataFrame containing transmission line (TL) geometri
 1. **voltage_kv::Int**: Filters the DataFrame based on the specified voltage level in kV. Currently accepts voltage levels of 345, 500 and 735 kv. No null values are accepted.
 2. **n_circuits::Int**: Ensures the number of circuits is either 1 or 2, an error is raised if the specified number is outside this range. In case there is no data matching voltage and number of circuits criteria, a warning is raised and it returns the obtained dataframe considering only the voltage level filter. No null values are accepted.
 3. **n_ground_wire::Int**: Ensures the number of ground wires is either 1 or 2. Raises an error if the specified number is outside this range. In case there is no data matching voltage, number of circuits criteria and number of Ground wires filters, a warning is raised and it returns the obtained dataframe considering only the voltage level and N circuits filter. No null values are accepted.
-4. **state::Union{Vector{String}, Matrix{String}}**: Optionally filters the DataFrame based on the specified state(s). It ignores upper/lower case differences and leading or trail spaces in the state string.
-5. **structure_type::Union{Vector{String}, Matrix{String}}**: Optionally filters the DataFrame based on the specified structure type(s) (Lattice, Pole, H frame or Y). It ignores upper/lower case differences and leading or trail spaces in the structure_type string.
+4. **state::StringArrayFilteringData**: Optionally filters the DataFrame based on the specified state(s). It ignores upper/lower case differences and leading or trail spaces in the state string.
+5. **structure_type::StringArrayFilteringData**: Optionally filters the DataFrame based on the specified structure type(s) (Lattice, Pole, H frame or Y). It ignores upper/lower case differences and leading or trail spaces in the structure_type string.
 
 # Example 1
 #Load Data

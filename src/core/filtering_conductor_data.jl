@@ -2,16 +2,46 @@
 #|-----------API FOR USER GET CONDUCTOR-----------|
 #|________________________________________________|
 
+
+"""
+    get_conductor( 
+        type_v::StringArrayFilteringData, 
+        codename_or_kcm_v::CableSpecificFilteringData,
+        df_conductors::DataFrame,
+        tl_basicdata::TLBasicData;
+        bundling::Int = 0, 
+        bundlingspacing::Float64 = 18.0, 
+        rowindex::Int = 1 
+    ) -> Conductor
+
+Retrieve phase conductor data based on specified filtering criteria and transmission line characteristics.
+
+# Arguments
+- `type_v`: Filtering data specifying the conductor type(s).
+- `codename_or_kcm_v`: Filtering data for conductor codename or kcmil rating.
+- `df_conductors`: DataFrame containing available conductor records.
+- `tl_basicdata`: Struct with fundamental transmission line data.
+- `bundling`: (Optional) Integer specifying the number of bundled conductors per phase, defaults to `0` (single conductor).
+- `bundlingspacing`: (Optional) Spacing between bundled conductors in inches, defaults to `18.0`.
+- `rowindex`: (Optional) Integer index specifying which row to extract from the filtered data, defaults to `1`.
+
+# Returns
+- `Conductor`: A struct containing the selected phase conductor data.
+
+# Description
+This function filters `df_conductors` using `type_v` (AAC, AAAC, ACSR ACAR, etc) and `codename_or_kcm_v` (Codename-Bluejay,Kiwi...- or kcm). It returns the struct with the relevant conductor records.
+
+"""
 function get_conductor( 
-    type_v::Union{Vector{String}, Matrix{String}}, 
-    name_v::Union{Vector{String}, Matrix{String}},
+    type_v::StringArrayFilteringData, 
+    codename_or_kcm_v::CableSpecificFilteringData,
     df_conductors::DataFrame,
     tl_basicdata::TLBasicData;
     bundling::Int = 0, 
     bundlingspacing::Float64 = 18.0, 
     rowindex::Int = 1 
  )
-    conductor_filter = get_struct_conductor_filters( type_v, name_v )
+    conductor_filter = get_struct_conductor_filters( type_v, codename_or_kcm_v )
     filt_conductor_df = get_tl_conductor( df_conductors, conductor_filter )
     tl_conductor = get_phase_conductor( 
                     filt_conductor_df, 
@@ -28,16 +58,16 @@ end
 #|________________________________________________|
 
 function get_struct_conductor_filters( 
-    type::Union{Vector{String}, Matrix{String}}, 
-    name::Union{Vector{String}, Matrix{String}} 
+    type::StringArrayFilteringData, 
+    name::StringArrayFilteringData 
     )::ConductorFilterName
 
     return ConductorFilterName( type, name )
 end
 
 function get_struct_conductor_filters( 
-    type::Union{Vector{String}, Matrix{String}}, 
-    kcm::Union{Vector{Float64}, Matrix{Float64}} 
+    type::StringArrayFilteringData, 
+    kcm::FloatArrayFilteringData 
     )::ConductorFilterKcm
 
     return ConductorFilterKcm( type, kcm )

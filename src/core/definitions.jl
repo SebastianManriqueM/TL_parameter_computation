@@ -1,4 +1,12 @@
 #|------------------------------------------------|
+#|--------------ALIAS FOR INPUT DATA--------------|
+#|________________________________________________|
+const StringArrayFilteringData = Union{Vector{String}, Matrix{String}}
+const FloatArrayFilteringData = Union{Vector{Float64}, Matrix{Float64}}
+const CableSpecificFilteringData = Union{StringArrayFilteringData, FloatArrayFilteringData}
+
+
+#|------------------------------------------------|
 #|-------------CONSTANTS AND FACTORS--------------|
 #|________________________________________________|
 
