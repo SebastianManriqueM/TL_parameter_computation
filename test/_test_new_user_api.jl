@@ -18,7 +18,7 @@ tl_basicdata, tl_geometry = get_transmission_line_geometry(
 
 tl_conductor = get_conductor( 
                         ["Acsr"], 
-                        ["Linnet"],
+                        ["Linnet_EX_K4_1"],
                         df_conductors,
                         tl_basicdata;
                         bundling = 1, 
