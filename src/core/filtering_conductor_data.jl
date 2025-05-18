@@ -193,10 +193,7 @@ function get_phase_conductor(
 
     r_ft_c          = get_req_from_XC(XCinternal, basicdata.frequency )#diameter * 0.5 * FACTOR_FT_INCH
     r_ft_c_bundling = get_gmr_bundling_xy( bundling_xcoord, bundling_ycoord, radius, r_ft_c )
-    @show gmr
-    @show gmr_bundling
-    @show r_ft_c
-    @show r_ft_c_bundling
+   
     XC_bundling     = ( XC_FACTOR_MOHM_MILE / basicdata.frequency ) * log( 1 / r_ft_c_bundling ) / FACTOR_MILES_KFT #Mohm*kft
 
     ampacity_bundling = bundling * ampacity   #Amperes
