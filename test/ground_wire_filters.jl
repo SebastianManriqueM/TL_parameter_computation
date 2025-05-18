@@ -23,7 +23,7 @@
     @test tl_ground_w.XLinternal ≈ 0.11054 atol= (0.11054 * tolerance)
 end
 
-@testset "Alumoweld Ground wire.  - Filter Type + awg str." begin
+@testset "Alumoweld Ground wire.  - Dataframe retrieve." begin
     tolerance = 0.001
     ground_w_filter = get_struct_ground_wire_filters( ["Alumoweld"], ["19/7"] )
     filt_ground_w_df = get_tl_ground_wire( df_ground_w, ground_w_filter )
@@ -35,7 +35,7 @@ end
 
 
 @testset "Alumoweld Ground wire.  - Filter Type + awg." begin
-    tolerance = 0.005
+    tolerance = 0.002
     tl_basicdata, tl_geometry = get_transmission_line_geometry(
                                 33.0,
                                 df_geometry;    
@@ -61,7 +61,7 @@ end
 end
 
 @testset "Alumoweld Ground wire.  - Filter Type + kcmil." begin
-    tolerance = 0.005
+    tolerance = 0.002
     tl_basicdata, tl_geometry = get_transmission_line_geometry(
                                 33.0,
                                 df_geometry;    
