@@ -34,3 +34,20 @@ function get_distance_xy(
     )
     return sqrt( ( x[1] - x[2] )^2 + ( y[1] - y[2] )^2 )
 end
+
+function get_all_distances(
+    n_cables::Int,
+    x_coordinates::Matrix{Float64},
+    y_coordinates::Matrix{Float64}
+    )
+    n_dist    = round( Int , ( factorial(n_cables) ) / ( factorial(2) * factorial(n_cables - 2) ) )#N distance/combinations
+    distances = zeros( 1 , n_dist)
+    iter      = combinations( collect(1:n_cables), 2 )
+    i         = 1
+    
+    for idx_v in iter
+        distances[i] = get_distance_xy( x_coordinates[idx_v] , y_coordinates[idx_v] )
+        i = i+1
+    end
+    return distances, collect(iter)
+end

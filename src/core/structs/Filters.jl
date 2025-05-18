@@ -6,6 +6,10 @@ mutable struct TLFilters <: AbstractFilterTLGeometry
     structure_type::StringArrayFilteringData
  end
 
+ mutable struct TLStructCodeFilter <: AbstractFilterTLGeometry
+    struct_code::String
+ end
+
 mutable struct ConductorFilterName <: ConductorFilter
     type::StringArrayFilteringData
     codeword::StringArrayFilteringData

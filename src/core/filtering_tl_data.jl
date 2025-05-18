@@ -27,6 +27,24 @@ function get_transmission_line_geometry(
     return tl_basicdata, tl_geometry
 end
 
+function get_transmission_line_geometry(
+    struct_code::String,
+    df_tl_geometry::DataFrame
+)
+     #Set TL filtering options
+    tl_filter = get_user_filter_tl_geometry(
+                            struct_code; #voltage
+                            )
+#TLStructCodeFilter
+    #println("FILTER ONLY ONE STATE: $(tl_filter.state)")
+    filt_tl_df = get_tl_df_all_filters(df_tl_geometry, tl_filter)
+
+    tl_basicdata = get_tl_basicdata( filt_tl_df )
+    tl_geometry = get_tl_geometry( filt_tl_df, tl_basicdata )
+
+    return tl_basicdata, tl_geometry
+end
+
 
 #|------------------------------------------------|
 #|----------GET STRUCT FILTERS FUNCTIONS----------|
@@ -41,6 +59,11 @@ function get_user_filter_tl_geometry(
     return TLFilters( voltage, n_circuits, n_ground_wires, v_str_states, v_str_structure_types )
 end
 
+function get_user_filter_tl_geometry( 
+    struct_code::String,
+    )::TLStructCodeFilter
+    return TLStructCodeFilter( struct_code )
+end
 
 #|------------------------------------------------|
 #|--------GET FILTERED DATAFRAME FUNCTIONS--------|
@@ -155,45 +178,43 @@ Apply multiple filters to a DataFrame containing transmission line (TL) geometri
 # Filtering Process
 1. **voltage_kv::Int**: Filters the DataFrame based on the specified voltage level in kV. Currently accepts voltage levels of 345, 500 and 735 kv. No null values are accepted.
 2. **n_circuits::Int**: Ensures the number of circuits is either 1 or 2, an error is raised if the specified number is outside this range. In case there is no data matching voltage and number of circuits criteria, a warning is raised and it returns the obtained dataframe considering only the voltage level filter. No null values are accepted.
-3. **n_ground_wire::Int**: Ensures the number of ground wires is either 1 or 2. Raises an error if the specified number is outside this range. In case there is no data matching voltage, number of circuits criteria and number of Ground wires filters, a warning is raised and it returns the obtained dataframe considering only the voltage level and N circuits filter. No null values are accepted.
-4. **state::StringArrayFilteringData**: Optionally filters the DataFrame based on the specified state(s). It ignores upper/lower case differences and leading or trail spaces in the state string.
-5. **structure_type::StringArrayFilteringData**: Optionally filters the DataFrame based on the specified structure type(s) (Lattice, Pole, H frame or Y). It ignores upper/lower case differences and leading or trail spaces in the structure_type string.
+3. **n_ground_wire::Int**: Ensures the number of ground wires is either 1 or 2. Raises an error if the specified number is outside this range. In case there is no data matching voltage, number of circuits criteria and number of Ground wires filters, a warning is raised and it returns the obtained dataframe considering only the voltage level and N circuits filter. No null values upper/lower case differences and leading or trail spaces in the structure_type string.
 
 # Example 1
-#Load Data
+# Load Data
 df_tl_geometry    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_geometry) )
 df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
 
-#Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice 
+# Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice 
 tl1_filter        = TLFilters( 345, 2, 2, ["Indiana"], ["Lattice"] )
 
-#Apply filters and obtain filtered data frame
+# Apply filters and obtain filtered data frame
 filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
-#Print obtained dataframe
+# Print obtained dataframe
 println(filt_df[:,1:7])
 
 
 # Example 2
-#Load Data
+# Load Data
 
 df_tl_geometry    = DataFrame( XLSX.readtable(file_rel_path, sheet_tl_geometry) )
 
 df_us_states_info = DataFrame( XLSX.readtable(file_rel_path, sheet_us_states) )
 
-#Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice
+# Set filtering options, 345 kV, 2 circuits, 2 ground wires, State = Indiana, Structure type = Lattice
 
 tl1_filter        = TLFilters( 345, 2, 2, ["Indiana"], ["Lattice"] )
 
-#Include bordering states in the filter
+# Include bordering states in the filter
 
 get_filter_with_neighboring_states!( tl1_filter, df_us_states_info  )
 
-#Apply filters and obtain filtered data frame
+# Apply filters and obtain filtered data frame
 
 filt_df           = get_tl_df_all_filters(df_tl_geometry, tl1_filter)
 
-#Print obtained dataframe that includes the selected state and its bordering states
+# Print obtained dataframe that includes the selected state and its bordering states
 
 println(filt_df[:,1:7])
 """
@@ -256,6 +277,66 @@ function get_tl_df_all_filters(
     return filt_df
 end
 
+function get_voltage_from_struct_code( 
+    struct_code::String
+    )
+    if struct_code[1] == "2"
+        voltage = 230.0
+    elseif struct_code[1] == "3"
+        voltage = 345.0
+    elseif struct_code[1] == "5"
+        voltage = 500.0
+    elseif struct_code[1] == "7"
+        voltage = 735.0
+    else
+        @error("First character of struct_code must be 2, 3, 5 or 7. Check the struct_code value.")
+    end
+    return voltage
+end
+
+function get_struct_type_from_struct_code( 
+    struct_code::String
+    )
+    if struct_code[2] == "L"
+        struct_type = "Lattice"
+    elseif struct_code[2] == "P"
+        struct_type = "Pole"
+    elseif struct_code[2] == "H"
+        struct_type = "H frame"
+    elseif struct_code[2] == "Y"
+        struct_type = "Y"
+    else
+        @error("Second character of struct_code must be L (Lattice), P (Pole), H (H frame) or Y (Y Frame). Check the struct_code value.")
+    end
+    return struct_type
+end
+
+
+function get_tl_df_all_filters( 
+    df::DataFrame, 
+    user_filter::TLStructCodeFilter 
+    )
+    filt_df = filter(row -> row[:code] == user_filter.struct_code, df)
+    if nrow(filt_df) < 1
+        @warn( "Currently, there is no any structure identified with the given struct_code: $(user_filter.struct_code). Attempting to provide a similar line." )
+        
+        voltage = get_voltage_from_struct_code( user_filter.struct_code )
+
+        struct_type = get_struct_type_from_struct_code( user_filter.struct_code )
+
+        tl_filter = get_user_filter_tl_geometry(
+                            voltage; #voltage
+                            v_str_structure_types = [struct_type]
+                            )
+
+        #println("FILTER ONLY ONE STATE: $(tl_filter.state)")
+        filt_df = get_tl_df_all_filters(df, tl_filter)
+
+        return filt_df
+    end
+
+    return filt_df
+end
 
 #|------------------------------------------------|
 #|-------------GET TL BASICDATA STRUCT------------|
@@ -279,27 +360,6 @@ end
 #|------------------------------------------------|
 #|-------------GET TL GEOMETRY STRUCT-------------|
 #|________________________________________________|
-
-
-function get_all_distances(
-    n_cables::Int,
-    x_coordinates::Matrix{Float64},
-    y_coordinates::Matrix{Float64}
-    )
-    n_dist    = round( Int , ( factorial(n_cables) ) / ( factorial(2) * factorial(n_cables - 2) ) )#N distance/combinations
-    distances = zeros( 1 , n_dist)
-    iter      = combinations( collect(1:n_cables), 2 )
-    i         = 1
-    
-    for idx_v in iter
-        distances[i] = get_distance_xy( x_coordinates[idx_v] , y_coordinates[idx_v] )
-        i = i+1
-    end
-    return distances, collect(iter)
-end
-
-
-
 function get_tl_geometry( 
     df::DataFrame, 
     basicdata::TLBasicData; 

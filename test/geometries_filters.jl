@@ -49,7 +49,7 @@ end
     @test tl_geometry.distances[6] ≈ 1000.34 atol= (1000.34 * tolerance)
 end
 
-@testset "Lattice structure 345 kV - Single Circuit Lattice." begin
+@testset "Lattice structure 345 kV - Single Circuit Lattice. Filter Including state and struct type" begin
     tolerance = 0.0025
     tl_basicdata, tl_geometry = get_transmission_line_geometry(
                                 345.0,
@@ -79,7 +79,7 @@ end
 end
 
 
-@testset "Lattice structure 345 kV - Single Circuit ." begin
+@testset "H frame structure 345 kV - Double Circuit. Filter Including state and struct type" begin
     tolerance = 0.0025
     tl_basicdata, tl_geometry = get_transmission_line_geometry(
                                 345.0,
@@ -126,4 +126,29 @@ end
     @test tl_geometry.distances[26] ≈ 72.6705 atol= (72.6705 * tolerance)
     @test tl_geometry.distances[27] ≈ 41.3673  atol= (41.3673 * tolerance)
     @test tl_geometry.distances[28] ≈ 54.5    atol= (54.5 * tolerance)
+end
+
+@testset "Y structure 500 kV - Single Circuit. Filter struct code" begin
+    tolerance = 0.0025
+    tl_basicdata, tl_geometry = get_transmission_line_geometry(
+                                "5Y2",
+                                df_geometry
+                            )
+
+    @test tl_basicdata.structure_code == "5Y2"
+    #@test tl_basicdata.state == "Pennsylvania"
+    @test tl_basicdata.voltage_kv ≈ 500.0 atol= (500.0 * tolerance)
+    @test tl_basicdata.n_ground_wire == 2
+    @test tl_basicdata.n_circuits == 1
+
+    @test tl_geometry.distances[1] ≈ 37.3162 atol= (37.3162 * tolerance)
+    @test tl_geometry.distances[2] ≈ 37.3162 atol= (37.3162 * tolerance)
+    @test tl_geometry.distances[3] ≈ 23.8537 atol= (23.8537 * tolerance)
+    @test tl_geometry.distances[4] ≈ 23.8537 atol= (23.8537 * tolerance)
+    @test tl_geometry.distances[5] ≈ 43.0 atol= (43.0 * tolerance)
+    @test tl_geometry.distances[6] ≈ 43.5259 atol= (43.5259 * tolerance)
+    @test tl_geometry.distances[7] ≈ 60.1207 atol= (60.1207 * tolerance)
+    @test tl_geometry.distances[8] ≈ 60.1207 atol= (60.1207 * tolerance)
+    @test tl_geometry.distances[9] ≈ 43.5259 atol= (43.5259 * tolerance)
+    @test tl_geometry.distances[10] ≈ 40.0 atol= (40.0 * tolerance)
 end
