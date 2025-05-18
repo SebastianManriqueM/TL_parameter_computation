@@ -7,6 +7,15 @@ using Combinatorics
 using Statistics
 
 include( "core/definitions.jl" )
+#-----Structs-----------------------------------
+include( "core/structs/Filters.jl" )
+include( "core/structs/ParametersElectricalParameters.jl" )
+include( "core/structs/PhysicalComponentBasicData.jl" )
+include( "core/structs/PhysicalComponentTLConductor.jl" )
+include( "core/structs/PhysicalComponentTLGroundWire.jl" )
+include( "core/structs/TransmissionLines.jl" )
+
+#-----Core-----------------------------------
 include("core/io_prints.jl" )
 include( "core/common_filters.jl" ) 
 include( "core/utils_calcs.jl" )

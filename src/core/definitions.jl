@@ -1,14 +1,3 @@
-# using Parameters
-# using XLSX
-# using DataFrames
-
-# using LinearAlgebra
-# using Combinatorics
-# using Statistics
-
-
-# include("io_prints.jl")
-
 #|------------------------------------------------|
 #|-------------CONSTANTS AND FACTORS--------------|
 #|________________________________________________|
@@ -111,6 +100,8 @@ COL_INDEX_GROUND_WIRE = Dict(
 #|------------------------------------------------|
 #|--------------------SRUCTS----------------------|
 #|________________________________________________|
+
+#----FILTERS----
 abstract type AbstractFiltersStructs end
 
 abstract type AbstractFilterTLGeometry <: AbstractFiltersStructs end
@@ -121,131 +112,9 @@ abstract type ConductorFilter <: AbstractCablesFilter end
 
 abstract type GroundWireFilter <: AbstractCablesFilter end
 
-#Struct for user filter of transmission lines geometries
-mutable struct TLFilters <: AbstractFilterTLGeometry
-    voltage_kv::Int
-    n_circuits::Int
-    n_ground_wire::Int
-    state::Union{Vector{String}, Matrix{String}}
-    structure_type::Union{Vector{String}, Matrix{String}}
-
- end
-
-mutable struct ConductorFilterName <: ConductorFilter
-    type::Union{Vector{String}, Matrix{String}}
-    codeword::Union{Vector{String}, Matrix{String}}
-end
-
-mutable struct ConductorFilterKcm <: ConductorFilter
-    type::Union{Vector{String}, Matrix{String}}
-    kcmil::Union{Vector{Float64}, Matrix{Float64}}
-end
-
-mutable struct GroundWireFilterAWG <: GroundWireFilter
-    type::Union{Vector{String}, Matrix{String}}
-    awg::Union{Vector{String}, Matrix{String}}
-end
-
-mutable struct GroundWireFilterKcm <: GroundWireFilter
-    type::Union{Vector{String}, Matrix{String}}
-    kcmil::Union{Vector{Float64}, Matrix{Float64}}
-end
-
+#----TRANSMISSION LINE COMPONENT, CATA AND PARAMETERS----
 abstract type AbstractTLPhysicalComponent end
 abstract type AbstractTLCable <: AbstractTLPhysicalComponent end
 abstract type AbstractTLParameters end
-#Structs part of Abstact type TransmissionLine
-mutable struct TLBasicData <: AbstractTLPhysicalComponent
-    name::String
-    voltage_kv::Float64
-    n_circuits::Int
-    n_ground_wire::Int
-    state::String
-    structure_type::String
-    structure_code::String
-    distance::Float64       #Miles
-    S_rated::Float64        #MVA
-    frequency::Float64      #Hz
-    gnd_rho::Float64        #ohm/m
-end
-
-mutable struct TLGeometry <: AbstractTLPhysicalComponent
-    n_cables::Int
-    x_coordinates::Matrix{Float64}  #ft
-    y_coordinates::Matrix{Float64}  #ft
-    combinations::Vector{Vector{Int64}}
-    distances::Matrix{Float64}      #ft
-end
-
-
-mutable struct TLConductor <: AbstractTLCable
-    type::String
-    codeword::String
-    stranding::String
-    kcmil::Float64
-    diameter::Float64   #inches
-    gmr::Float64        #ft
-    Rac_tnom::Float64   #ohm/kft
-    XLinternal::Float64 #ohm/kft
-    XCinternal::Float64 #Mohm/kft
-    ampacity::Float64   #Amperes
-    #weight::Float64 #-Could be interesting to add constraints TODO
-    #strenght::Float64 #-Could be interesting to add constraints TODO
-    bundling::Int
-    bundlingspacing::Float64
-    bundling_xcoordinates::Matrix{Float64}
-    bundling_ycoordinates::Matrix{Float64}
-    gmr_bundling::Float64        #ft
-    XL_bundling::Float64 #ohm/kft
-    r_ft_c_bundling::Float64 #equivalent radius in feet for C calculations
-    XC_bundling::Float64 #Mohm*kft
-    ampacity_bundling::Float64   #Amperes
-end
-
-mutable struct TLGroundWire <: AbstractTLCable
-    type::String
-    awg::String
-    kcmil::Float64
-    diameter::Float64 #inches
-    gmr::Float64      #inches
-    Rdc_20::Float64
-    XLinternal::Float64
-    XCinternal::Float64
-end
-
-
-mutable struct ElectricalParameters <: AbstractTLParameters
-    Zabcg::Matrix{ComplexF64}       #Series impedance Primitive Matrix                          ohm/mile
-    Z_kron_nt::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - non transposed      ohm/mile
-    Z012_nt::Matrix{ComplexF64}     #Series impedance Sequence Matrix - non transposed          ohm/mile
-    Z_kron_ft::Matrix{ComplexF64}   #Series impedance Kron reduced matrix - fully transposed    ohm/mile
-    Z012_ft::Matrix{ComplexF64}     #Series impedance Sequence Matrix - fully transposed        ohm/mile
-    Y_kron_nt::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - non transposed      ohm/mile
-    Y012_nt::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - non transposed          ohm/mile
-    Y_kron_ft::Matrix{ComplexF64}   #Shunt admittance Kron reduced matrix - fully transposed    ohm/mile
-    Y012_ft::Matrix{ComplexF64}     #Shunt admittance Sequence Matrix - fully transposed        ohm/mile
-    r1::Float64                     #Positive/negative sequence series resistance Ohms/mile              ohm/mile
-    x1::Float64                     #Positive/negative sequence series reactance  Ohms/mile              ohm/mile
-    b1::Float64                     #Positive/negative sequence shunt suceptance  uS/mile              uS/mile
-    r0::Float64                     #Zero sequence series resistance
-    x0::Float64                     #Zero sequence series reactance
-    b0::Float64                     #Zero sequence shunt suceptance                             uS/mile
-    r0m::Float64                    #Zero sequence mutual resistance (Between circuits)
-    x0m::Float64                    #Zero sequence mutual reactance (Between circuits)
-    b0m::Float64                    #Zero sequence mutual suceptance (Between circuits)
-    Z_sil::Float64                  #Surge impedance in Ohms
-    sil::Float64                    # Surge Impedance Load in MW
-    #Zabcg_pu::Matrix{Float64}       #Primitive Matrix
-    #Z_kron_pu::Matrix{Float64}      #Kron reduced matrix
-    #Z012_pu::Matrix{Float64}        #Sequence Matrix
-end
 
 abstract type AbstractTransmissionLine end
-
-mutable struct OverHeadLine <: AbstractTransmissionLine
-    basicdata::TLBasicData
-    geometry::TLGeometry
-    conductor::TLConductor
-    groundwire::TLGroundWire
-    parameters::ElectricalParameters
-end
