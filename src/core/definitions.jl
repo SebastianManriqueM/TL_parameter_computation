@@ -118,3 +118,5 @@ abstract type AbstractTLCable <: AbstractTLPhysicalComponent end
 abstract type AbstractTLParameters end
 
 abstract type AbstractTransmissionLine end
+
+abstract type AbstractTLExamples end

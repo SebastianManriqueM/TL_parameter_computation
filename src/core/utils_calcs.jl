@@ -1,7 +1,7 @@
 function get_gmr_from_diameter_inch(
     diameter_inch::Float64, 
     )
-    return ℯ^(-1/4) * (0.5 * diameter_inch) * FACTOR_FT_INCH
+    return ℯ^(-1/4) * (0.5 * diameter_inch * FACTOR_FT_INCH) 
 end
 
 #GMR RETURNS IN FEET, AND XL SHOULD BE GIVEN IN OHM/KFT AND FREQUENCY IN HZ

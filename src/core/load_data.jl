@@ -1,5 +1,3 @@
-# include("definitions.jl")
-
 function load_transmission_line_db( )
     #Read data from XLSX file (Geometries, T Lines, Conductors, etc) 
     file_rel_path      = "src/data/Tower_geometries_DB.xlsx"
