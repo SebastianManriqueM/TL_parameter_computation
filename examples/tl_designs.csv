@@ -1,0 +1,13 @@
+Voltage_kv,Struct_type,struct_code,Case,Conductor_type,Conductor_code,Conductor_kcm,Conductor_kcm2,bundling,Groundwire_type,Groundwire_code
+230,H frame,2H1_PVOGTLE,S,ACSR,Grosbeak,636,700,1,Alumoweld,7/7
+230,H frame,2H1_PVOGTLE,M,ACSR,Drake,795,850,1,Alumoweld,7/7
+230,H frame,2H1_PVOGTLE,L,ACSR,Cardinal,954,1000,1,Alumoweld,7/7
+345,Lattice,3L2,S,ACSR,Bluebird,2156,2200,1,Alumoweld,7/7
+345,Lattice,3L2,M,ACSR,Bobolink,1431,1400,2,Alumoweld,7/7
+345,Lattice,3L2,L,ACSR,Bluebird,2156,2200,2,Alumoweld,7/7
+500,Lattice,5L4,S,ACSR,Bluebird,2156,2200,2,Alumoweld,7/7
+500,Lattice,5L4,M,ACSR,Bittern,1272,1300,3,Alumoweld,7/7
+500,Lattice,5L4,L,ACSR,Falcon,1590,1500,3,Alumoweld,7/7
+765,Lattice,7L1,S,ACSR,Rail,954,900,4,Alumoweld,7/7
+765,Lattice,7L1,M,ACSR,Bluejay,1113,1100,4,Alumoweld,7/7
+765,Lattice,7L1,L,ACSR,Falcon,1590,1300,4,Alumoweld,7/7
