@@ -1,9 +1,9 @@
 #|------------------------------------------------|
 #|--------------ALIAS FOR INPUT DATA--------------|
 #|________________________________________________|
-const StringArrayFilteringData = Union{Vector{String}, Matrix{String}}
-const FloatArrayFilteringData = Union{Vector{Float64}, Matrix{Float64}}
-const CableSpecificFilteringData = Union{StringArrayFilteringData, FloatArrayFilteringData}
+StringArrayFilteringData = Union{Vector{<:AbstractString}, Matrix{<:AbstractString}}
+FloatArrayFilteringData = Union{Vector{Float64}, Matrix{Float64}}
+CableSpecificFilteringData = Union{StringArrayFilteringData, FloatArrayFilteringData}
 
 
 #|------------------------------------------------|
@@ -28,7 +28,7 @@ XC_FACTOR_MOHM_KFT   = 9.39312 #Stevenson p.176
 #|------------------------------------------------|
 #|---------------CONSTANT VECTORS-----------------|
 #|________________________________________________|
-DATA_SET_TL_VOLTAGES = [33 230 255 345 500 735]
+DATA_SET_TL_VOLTAGES = [33 230 255 345 500 765]
 US_STATES_LIST_SHORT = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
 US_STATES_LIST       = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina" , "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 

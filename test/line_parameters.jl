@@ -1,6 +1,3 @@
-
-tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
-
 @testset "Validation Kersting example Primitive Non-Transposed Matrix" begin
     tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
     tolerance = 0.005
@@ -68,4 +65,3 @@ end
         end
     end
 end
-

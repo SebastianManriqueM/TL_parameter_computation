@@ -28,7 +28,7 @@ function get_transmission_line_geometry(
 end
 
 function get_transmission_line_geometry(
-    struct_code::String,
+    struct_code::AbstractString,
     df_tl_geometry::DataFrame
 )
      #Set TL filtering options
@@ -60,7 +60,7 @@ function get_user_filter_tl_geometry(
 end
 
 function get_user_filter_tl_geometry( 
-    struct_code::String,
+    struct_code::AbstractString,
     )::TLStructCodeFilter
     return TLStructCodeFilter( struct_code )
 end
@@ -89,7 +89,7 @@ end
 
 function compare_index_v_dimension( 
     index::Int, 
-    vector , 
+    vector, 
     function_name
     )
     if index > length( vector )
@@ -278,7 +278,7 @@ function get_tl_df_all_filters(
 end
 
 function get_voltage_from_struct_code( 
-    struct_code::String
+    struct_code::AbstractString
     )
     if struct_code[1] == "2"
         voltage = 230.0
@@ -295,7 +295,7 @@ function get_voltage_from_struct_code(
 end
 
 function get_struct_type_from_struct_code( 
-    struct_code::String
+    struct_code::AbstractString
     )
     if struct_code[2] == "L"
         struct_type = "Lattice"
@@ -343,7 +343,7 @@ end
 #|________________________________________________|
 function get_tl_basicdata( 
     df::DataFrame; 
-    name::String = "",
+    name::AbstractString = "",
     S_rated::Float64 = 0.0,
     frequency::Float64 = 60.0,
     distance::Float64 = 0.0,
@@ -406,5 +406,4 @@ function get_tl_geometry(
 
     return TLGeometry( n_cables, x_coord, y_coord, combinations, distances )
 end
-
 
