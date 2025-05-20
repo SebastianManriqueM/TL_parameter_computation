@@ -1,4 +1,4 @@
-@testset "Validation Kersting example Primitive Non-Transposed Matrix" begin
+@testset "Validation Kersting example Primitive Non-Transposed Z Matrix" begin
     tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
     tolerance = 0.005
 
@@ -15,7 +15,7 @@
 end
 
 
-@testset "Validation Kersting example Non-Transposed Kron Matrix" begin
+@testset "Validation Kersting example Non-Transposed Z Kron Matrix" begin
     tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
     tolerance = 0.005
 
@@ -31,7 +31,7 @@ end
 end
 
 
-@testset "Validation Kersting example Transposed Kron Matrix" begin
+@testset "Validation Kersting example Transposed Z Kron Matrix" begin
     tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
     tolerance = 0.005
 
@@ -47,7 +47,7 @@ end
 end
 
 
-@testset "Validation Kersting example Transposed Sequence Matrix" begin
+@testset "Validation Kersting example Transposed Z Sequence Matrix" begin
     tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
     tolerance = 0.005
 
@@ -62,6 +62,21 @@ end
             else
                 @test abs(Z012_calc[i,j]) < 1e-9
             end
+        end
+    end
+end
+
+@testset "Validation Kersting example Non-Transposed Y Kron Matrix" begin
+    tl_kersting = get_example_line( df_geometry, df_cond, df_ground_w, AbstractExampleKersting_4_1 )
+    tolerance = 0.028
+
+    Yabc_calc = tl_kersting.parameters.Y_kron_nt
+    Yabc_book = [5.6711im  -1.8362im  -0.7033im; 
+                -1.8362im   5.9774im  -1.169im; 
+                -0.7033im  -1.1690im   5.3911im]
+    for i in 1:3
+        for j in 1:3
+            @test abs(Yabc_calc[i,j] - Yabc_book[i,j]) < abs(Yabc_book[i,j]) * tolerance
         end
     end
 end
