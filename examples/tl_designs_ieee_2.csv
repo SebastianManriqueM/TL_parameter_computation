@@ -1,0 +1,22 @@
+Voltage_kv,Struct_type,struct_code,Case,Conductor_type,Conductor_code,Conductor_kcm,Conductor_kcm2,bundling,Groundwire_type,Groundwire_code
+230,H frame,2H1_PVOGTLE,S,ACSR,Grosbeak,636,700,2,Alumoweld,7/8
+230,H frame,2H1_PVOGTLE,M,ACSR,Drake,795,850,2,Alumoweld,7/8
+230,H frame,2H1_PVOGTLE,L,ACSR,Cardinal,954,1000,2,Alumoweld,7/8
+345,Lattice,3L2,S,ACSR,Cardinal,954,1000,2,Alumoweld,7/8
+345,Lattice,3L2,M,ACSR,Bluebird,2156,2200,2,Alumoweld,7/8
+345,Lattice,3L2,L,ACSR,Drake,795,850,3,Alumoweld,7/8
+500,Lattice,5L4,S,ACSR,Bluebird,2156,2200,2,Alumoweld,7/8
+500,Lattice,5L4,M,ACSR,Bittern,1272,1300,3,Alumoweld,7/8
+500,Lattice,5L4,L,ACSR,Drake,795,850,4,Alumoweld,7/8
+765,Lattice,7L1,S,ACSR,Bittern,1272,1300,4,Alumoweld,7/8
+765,Lattice,7L1,M,ACSR,Drake,795,850,6,Alumoweld,7/8
+765,Lattice,7L1,L,ACSR,Bluejay,1113,1100,6,Alumoweld,7/8
+230,Lattice,2L1_ASEC,S,ACSR,Grosbeak,636,700,2,Alumoweld,7/8
+230,Lattice,2L1_ASEC,M,ACSR,Drake,795,850,2,Alumoweld,7/8
+230,Lattice,2L1_ASEC,L,ACSR,Cardinal,954,1000,2,Alumoweld,7/8
+345,Lattice,3L11,S,ACSR,Cardinal,954,1000,2,Alumoweld,7/8
+345,Lattice,3L11,M,ACSR,Bluebird,2156,2200,2,Alumoweld,7/8
+345,Lattice,3L11,L,ACSR,Drake,795,850,3,Alumoweld,7/8
+500,Lattice,5L12,S,ACSR,Bluebird,2156,2200,2,Alumoweld,7/8
+500,Lattice,5L12,M,ACSR,Bittern,1272,1300,3,Alumoweld,7/8
+500,Lattice,5L12,L,ACSR,Drake,795,850,4,Alumoweld,7/8
