@@ -11,3 +11,4 @@ Voltage_kv,Struct_type,struct_code,Case,Conductor_type,Conductor_code,Conductor_
 765,Lattice,7L1,S,ACSR,Rail,954,900,4,Alumoweld,7/7
 765,Lattice,7L1,M,ACSR,Bluejay,1113,1100,4,Alumoweld,7/7
 765,Lattice,7L1,L,ACSR,Falcon,1590,1300,4,Alumoweld,7/7
+,,,,
